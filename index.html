@@ -1,14 +1,42 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>HTML</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="estilo.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de archivos y carpetas en GitHub</title>
 </head>
-
 <body>
-  <p>Esta página web es una página HTML válida.</p>
-  <a href="../carpeta">Página principal</a>
+    <h1>Contenido de la carpeta en GitHub</h1>
+    <ul id="file-list"></ul>
+
+    <script>
+        // URL de tu repositorio y la carpeta que deseas mostrar
+        const repoUrl = 'https://api.github.com/repos/tu-usuario/tu-repositorio/contents/docs';
+
+        fetch(repoUrl)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(item => {
+                    if (item.type === 'file') {
+                        const listItem = document.createElement('li');
+                        const link = document.createElement('a');
+                        link.href = item.html_url;
+                        link.textContent = item.name;
+                        listItem.appendChild(link);
+                        document.getElementById('file-list').appendChild(listItem);
+                    } else if (item.type === 'dir') {
+                        const listItem = document.createElement('li');
+                        const link = document.createElement('a');
+                        link.href = item.html_url;
+                        link.textContent = item.name + '/';
+                        listItem.appendChild(link);
+                        document.getElementById('file-list').appendChild(listItem);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    </script>
 </body>
 </html>
