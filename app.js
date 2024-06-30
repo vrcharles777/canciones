@@ -20,6 +20,11 @@ function displayFiles(files, path) {
     const fileList = document.getElementById('file-list');
     fileList.innerHTML = ''; // Limpiar lista anterior
     files.forEach(file => {
+        // Filtrar archivos .html y .js
+        if (file.name.endsWith('.html') || file.name.endsWith('.js')) {
+            return;
+        }
+
         const li = document.createElement('li');
         if (file.type === 'dir') {
             li.innerHTML = `<strong>${file.name}/</strong>`;
@@ -27,7 +32,7 @@ function displayFiles(files, path) {
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
         } else if (file.name.endsWith('.txt')) {
             li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
-        } else if (!file.name.endsWith('.html') && !file.name.endsWith('.js')) {
+        } else {
             li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
         }
         fileList.appendChild(li);
