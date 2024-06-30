@@ -1,42 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualización de archivos y carpetas en GitHub</title>
+    <title>Listado de Canciones</title>
 </head>
 <body>
-    <h1>Contenido de la carpeta en GitHub3</h1>
+    <h1>Listado de Canciones</h1>
     <ul id="file-list"></ul>
-
-    <script>
-        // URL de tu repositorio y la carpeta que deseas mostrar
-        const repoUrl = 'https://api.github.com/repos/vrcharles777/canciones';
-
-        fetch(repoUrl)
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(item => {
-                    if (item.type === 'file') {
-                        const listItem = document.createElement('li');
-                        const link = document.createElement('a');
-                        link.href = item.html_url;
-                        link.textContent = item.name;
-                        listItem.appendChild(link);
-                        document.getElementById('file-list').appendChild(listItem);
-                    } else if (item.type === 'dir') {
-                        const listItem = document.createElement('li');
-                        const link = document.createElement('a');
-                        link.href = item.html_url;
-                        link.textContent = item.name + '/';
-                        listItem.appendChild(link);
-                        document.getElementById('file-list').appendChild(listItem);
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    </script>
+    
+    <script src="app.js"></script>
 </body>
 </html>
