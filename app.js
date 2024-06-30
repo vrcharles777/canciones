@@ -31,7 +31,8 @@ function displayFiles(files, path) {
             
             // Si es un archivo HTML, cambiar el URL para que apunte a GitHub Pages
             if (fileName.endsWith('.html')) {
-                fileUrl = `https://${user}.github.io/${repo}/${path}/${fileName}`.replace(/\/\//g, '/');
+                const cleanPath = path ? `${path}/` : '';
+                fileUrl = `https://${user}.github.io/${repo}/${cleanPath}${fileName}`.replace(/\/\//g, '/');
             }
 
             li.innerHTML = `<a href="${fileUrl}" target="_blank">${fileName}</a>`;
