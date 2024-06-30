@@ -27,7 +27,7 @@ function displayFiles(files, path) {
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
         } else if (file.name.endsWith('.txt')) {
             li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
-        } else {
+        } else if (!file.name.endsWith('.html') && !file.name.endsWith('.js')) {
             li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
         }
         fileList.appendChild(li);
