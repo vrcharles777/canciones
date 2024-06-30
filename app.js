@@ -1,24 +1,30 @@
 const user = 'vrcharles777';
 const repo = 'canciones';
-const branch = 'main'; // Cambia esto si tu branch principal tiene otro nombre
+const branch = 'main'; // Asegúrate de que esta es la rama correcta
 
-async function fetchRepoContents() {
-    const url = `https://api.github.com/repos/${user}/${repo}/contents/`;
+async function fetchRepoContents(path = '') {
+    const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
     try {
         const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
-        displayFiles(data);
+        displayFiles(data, path);
     } catch (error) {
         console.error('Error al obtener el contenido del repositorio:', error);
     }
 }
 
-function displayFiles(files) {
+function displayFiles(files, path) {
     const fileList = document.getElementById('file-list');
+    fileList.innerHTML = ''; // Limpiar lista anterior
     files.forEach(file => {
         const li = document.createElement('li');
         if (file.type === 'dir') {
             li.innerHTML = `<strong>${file.name}/</strong>`;
+            li.style.cursor = 'pointer';
+            li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
         } else {
             li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
         }
@@ -26,4 +32,5 @@ function displayFiles(files) {
     });
 }
 
+// Inicializar
 fetchRepoContents();
