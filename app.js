@@ -25,20 +25,27 @@ function displayFiles(files, path) {
             li.innerHTML = `<strong>${file.name}/</strong>`;
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
+        } else if (file.name.endsWith('.txt')) {
+            li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
         } else {
-            const fileName = file.name;
-            let fileUrl = file.download_url;
-            
-            // Si es un archivo HTML, cambiar el URL para que apunte a GitHub Pages
-            if (fileName.endsWith('.html')) {
-                const cleanPath = path ? `${path}/` : '';
-                fileUrl = `https://${user}.github.io/${repo}/${fileName}`;
-            }
-
-            li.innerHTML = `<a href="${fileUrl}" target="_blank">${fileName}</a>`;
+            li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
         }
         fileList.appendChild(li);
     });
+}
+
+async function loadFileContent(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        localStorage.setItem('fileContent', text);
+        window.location.href = 'transponer.html';
+    } catch (error) {
+        console.error('Error al cargar el contenido del archivo:', error);
+    }
 }
 
 // Inicializar
