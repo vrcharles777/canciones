@@ -28,7 +28,7 @@ function displayFiles(files, path) {
         } else {
             const fileName = file.name;
             let fileUrl = file.download_url;
-            
+
             // Si es un archivo HTML, cambiar el URL para que apunte a GitHub Pages
             if (fileName.endsWith('.html')) {
                 const cleanPath = path ? `${path}/` : '';
