@@ -26,7 +26,11 @@ function displayFiles(files, path) {
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
         } else {
-            li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            if (file.name.endsWith('.html')) {
+                li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            } else {
+                li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            }
         }
         fileList.appendChild(li);
     });
