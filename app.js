@@ -26,11 +26,15 @@ function displayFiles(files, path) {
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
         } else {
-            if (file.name.endsWith('.html')) {
-                li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
-            } else {
-                li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            const fileName = file.name;
+            let fileUrl = file.download_url;
+            
+            // Si es un archivo HTML, cambiar el URL para que apunte a GitHub Pages
+            if (fileName.endsWith('.html')) {
+                fileUrl = `https://${user}.github.io/${repo}/${path}/${fileName}`.replace(/\/\//g, '/');
             }
+
+            li.innerHTML = `<a href="${fileUrl}" target="_blank">${fileName}</a>`;
         }
         fileList.appendChild(li);
     });
