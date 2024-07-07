@@ -4,109 +4,93 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
-            background-color: #f0f0f0;
+            align-items: center;
         }
-        textarea {
-            width: 80%;
-            max-width: 600px;
-            height: 50vh;
-            margin-bottom: 20px;
-            font-size: 1rem;
+        #controls {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
         }
         button {
-            font-size: 1rem;
-            padding: 10px 20px;
+            flex: 1;
             margin: 5px;
-            cursor: pointer;
+            padding: 10px;
+            font-size: 1.2em;
         }
-        @media (max-width: 768px) {
-            textarea {
-                font-size: 0.8rem;
-            }
-            button {
-                font-size: 0.8rem;
-                padding: 8px 16px;
-            }
-        }
-        @media (max-width: 480px) {
-            textarea {
-                font-size: 0.6rem;
-            }
-            button {
-                font-size: 0.6rem;
-                padding: 6px 12px;
-            }
+        #myTextarea {
+            width: 95%;
+            height: 80%;
+            margin: 10px 0;
+            font-size: 1.2em;
         }
     </style>
 </head>
 <body onload="loadContent()">
-    <div align="center">
-        <button onclick="myFunction2()">Retroceder</button>
-        <button onclick="myFunction()">Avanzar</button><br>
-        <textarea rows="40" cols="40" id="myTextarea"></textarea>
-    </div>
+<div id="controls">
+    <button onclick="myFunction2()">Retroceder</button>
+    <button onclick="myFunction()">Avanzar</button>
+</div>
+<textarea id="myTextarea"></textarea>
 
-    <script>
-        function loadContent() {
-            const content = localStorage.getItem('fileContent');
-            if (content) {
-                document.getElementById('myTextarea').value = content;
+<script>
+function loadContent() {
+    const content = localStorage.getItem('fileContent');
+    if (content) {
+        document.getElementById('myTextarea').value = content;
+    }
+}
+
+function myFunction() {
+    var lista = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B','C'];
+    var str = document.getElementById("myTextarea").value;
+    var str2 = "";
+    for (var i = 0; i < str.length; i++) {
+        var cambiado = 0;
+        var x = str.charAt(i);
+        if (str.charAt(i + 1) == '#') {
+            x += str.charAt(i + 1);
+            i = i + 1;
+        }
+        for (var j = 0; j < lista.length; j++) {
+            if (cambiado == 0 && x == lista[j]) {
+                x = lista[j + 1];
+                cambiado = 1;
             }
         }
+        str2 += x;
+    }
+    document.getElementById("myTextarea").value = str2;
+}
 
-        function myFunction() {
-            var lista = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C'];
-            var str = document.getElementById("myTextarea").value;
-            var str2 = "";
-            for (var i = 0; i < str.length; i++) {
-                var cambiado = 0;
-                var x = str.charAt(i);
-                if (str.charAt(i + 1) == '#') {
-                    x += str.charAt(i + 1);
-                    i = i + 1;
-                }
-                for (var j = 0; j < lista.length; j++) {
-                    if (cambiado == 0 && x == lista[j]) {
-                        x = lista[j + 1];
-                        cambiado = 1;
-                    }
-                }
-                str2 += x;
-            }
-            document.getElementById("myTextarea").value = str2;
+function myFunction2() {
+    var lista2 = ['B','A#','A','G#','G','F#','F','E','D#','D','C#','C','B'];
+    var str = document.getElementById("myTextarea").value;
+    var str2 = "";
+    for (var i = 0; i < str.length; i++) {
+        var cambiado = 0;
+        var x = str.charAt(i);
+        if (str.charAt(i + 1) == '#') {
+            x += str.charAt(i + 1);
+            i = i + 1;
         }
-
-        function myFunction2() {
-            var lista2 = ['B', 'A#', 'A', 'G#', 'G', 'F#', 'F', 'E', 'D#', 'D', 'C#', 'C', 'B'];
-            var str = document.getElementById("myTextarea").value;
-            var str2 = "";
-            for (var i = 0; i < str.length; i++) {
-                var cambiado = 0;
-                var x = str.charAt(i);
-                if (str.charAt(i + 1) == '#') {
-                    x += str.charAt(i + 1);
-                    i = i + 1;
-                }
-                for (var j = 0; j < lista2.length; j++) {
-                    if (cambiado == 0 && x == lista2[j]) {
-                        x = lista2[j + 1];
-                        cambiado = 1;
-                    }
-                }
-                str2 += x;
+        for (var j = 0; j < lista2.length; j++) {
+            if (cambiado == 0 && x == lista2[j]) {
+                x = lista2[j + 1];
+                cambiado = 1;
             }
-            document.getElementById("myTextarea").value = str2;
         }
-    </script>
+        str2 += x;
+    }
+    document.getElementById("myTextarea").value = str2;
+}
+</script>
 </body>
 </html>
-
