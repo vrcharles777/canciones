@@ -12,22 +12,36 @@ async function fetchRepoContents(path = '') {
         }
         const data = await response.json();
         currentPath = path;
+        displayBreadcrumb(path);
         displayFiles(data, path);
     } catch (error) {
         console.error('Error al obtener el contenido del repositorio:', error);
     }
 }
 
+function displayBreadcrumb(path) {
+    const breadcrumb = document.getElementById('breadcrumb');
+    breadcrumb.innerHTML = ''; // Limpiar ruta anterior
+    const pathArray = path ? path.split('/') : [];
+    
+    // Crear botón para la raíz
+    const rootButton = document.createElement('button');
+    rootButton.innerText = 'Root';
+    rootButton.onclick = () => fetchRepoContents('');
+    breadcrumb.appendChild(rootButton);
+
+    pathArray.forEach((folder, index) => {
+        const button = document.createElement('button');
+        button.innerText = folder;
+        const newPath = pathArray.slice(0, index + 1).join('/');
+        button.onclick = () => fetchRepoContents(newPath);
+        breadcrumb.appendChild(button);
+    });
+}
+
 function displayFiles(files, path) {
     const fileList = document.getElementById('file-list');
     fileList.innerHTML = ''; // Limpiar lista anterior
-
-    // Agregar enlace para volver a la carpeta anterior
-    if (path) {
-        const upLink = document.createElement('li');
-        upLink.innerHTML = `<a href="#" onclick="goUp()">⬆️ Anterior</a>`;
-        fileList.appendChild(upLink);
-    }
 
     files.forEach(file => {
         // Filtrar archivos .html y .js
@@ -61,13 +75,6 @@ async function loadFileContent(url) {
     } catch (error) {
         console.error('Error al cargar el contenido del archivo:', error);
     }
-}
-
-function goUp() {
-    const pathArray = currentPath.split('/');
-    pathArray.pop();
-    const newPath = pathArray.join('/');
-    fetchRepoContents(newPath);
 }
 
 // Inicializar
