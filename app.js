@@ -76,19 +76,18 @@ function displayFiles(files, path) {
 }
 
 function toggleFavorite(file, isChecked) {
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     if (isChecked) {
-        // Agregar archivo a favoritos si está marcado y no está ya en la lista
-        if (!favorites.some(fav => fav.path === file.path)) {
+        // Verificar si el archivo ya está en la lista de favoritos
+        const existingIndex = favorites.findIndex(fav => fav.path === file.path);
+        if (existingIndex === -1) {
+            // Agregar archivo a favoritos si no está ya en la lista
             favorites.push(file);
         }
     } else {
         // Eliminar archivo de favoritos si se desmarca
-        const index = favorites.findIndex(fav => fav.path === file.path);
-        if (index !== -1) {
-            favorites.splice(index, 1);
-        }
+        favorites = favorites.filter(fav => fav.path !== file.path);
     }
 
     localStorage.setItem('favorites', JSON.stringify(favorites));
