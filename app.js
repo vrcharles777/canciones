@@ -79,8 +79,10 @@ function toggleFavorite(file, isChecked) {
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     if (isChecked) {
-        // Agregar archivo a favoritos si está marcado
-        favorites.push(file);
+        // Agregar archivo a favoritos si está marcado y no está ya en la lista
+        if (!favorites.some(fav => fav.path === file.path)) {
+            favorites.push(file);
+        }
     } else {
         // Eliminar archivo de favoritos si se desmarca
         const index = favorites.findIndex(fav => fav.path === file.path);
