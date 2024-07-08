@@ -1,6 +1,7 @@
 const user = 'vrcharles777';
 const repo = 'canciones';
 const branch = 'main'; // Asegúrate de que esta es la rama correcta
+let currentPath = '';
 
 async function fetchRepoContents(path = '') {
     const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
@@ -10,6 +11,7 @@ async function fetchRepoContents(path = '') {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        currentPath = path;
         displayFiles(data, path);
     } catch (error) {
         console.error('Error al obtener el contenido del repositorio:', error);
@@ -19,6 +21,14 @@ async function fetchRepoContents(path = '') {
 function displayFiles(files, path) {
     const fileList = document.getElementById('file-list');
     fileList.innerHTML = ''; // Limpiar lista anterior
+
+    // Agregar enlace para volver a la carpeta anterior
+    if (path) {
+        const upLink = document.createElement('li');
+        upLink.innerHTML = `<a href="#" onclick="goUp()">⬆️ Anterior</a>`;
+        fileList.appendChild(upLink);
+    }
+
     files.forEach(file => {
         // Filtrar archivos .html y .js
         if (file.name.endsWith('.html') || file.name.endsWith('.js')) {
@@ -51,6 +61,13 @@ async function loadFileContent(url) {
     } catch (error) {
         console.error('Error al cargar el contenido del archivo:', error);
     }
+}
+
+function goUp() {
+    const pathArray = currentPath.split('/');
+    pathArray.pop();
+    const newPath = pathArray.join('/');
+    fetchRepoContents(newPath);
 }
 
 // Inicializar
