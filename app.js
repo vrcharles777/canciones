@@ -50,17 +50,22 @@ function displayFiles(files, path) {
         }
 
         const li = document.createElement('li');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = file.path;
-        checkbox.onchange = () => toggleFavorite(file);
 
-        li.appendChild(checkbox);
+        // Crear checkbox para archivos
+        if (file.type !== 'dir') {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = file.path;
+            checkbox.addEventListener('change', () => toggleFavorite(file, checkbox.checked));
+            li.appendChild(checkbox);
+        }
 
         if (file.type === 'dir') {
             li.innerHTML += `<strong>${file.name}/</strong>`;
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
+        } else if (file.name.endsWith('.txt')) {
+            li.innerHTML += `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
         } else {
             li.innerHTML += `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
         }
@@ -70,14 +75,18 @@ function displayFiles(files, path) {
     updateFavorites();
 }
 
-function toggleFavorite(file) {
+function toggleFavorite(file, isChecked) {
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    const fileIndex = favorites.findIndex(fav => fav.path === file.path);
 
-    if (fileIndex >= 0) {
-        favorites.splice(fileIndex, 1);
-    } else {
+    if (isChecked) {
+        // Agregar archivo a favoritos si está marcado
         favorites.push(file);
+    } else {
+        // Eliminar archivo de favoritos si se desmarca
+        const index = favorites.findIndex(fav => fav.path === file.path);
+        if (index !== -1) {
+            favorites.splice(index, 1);
+        }
     }
 
     localStorage.setItem('favorites', JSON.stringify(favorites));
