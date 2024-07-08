@@ -50,31 +50,50 @@ function displayFiles(files, path) {
         }
 
         const li = document.createElement('li');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = file.path;
+        checkbox.onchange = () => toggleFavorite(file);
+
+        li.appendChild(checkbox);
+
         if (file.type === 'dir') {
-            li.innerHTML = `<strong>${file.name}/</strong>`;
+            li.innerHTML += `<strong>${file.name}/</strong>`;
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
-        } else if (file.name.endsWith('.txt')) {
-            li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
         } else {
-            li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            li.innerHTML += `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
         }
         fileList.appendChild(li);
     });
+
+    updateFavorites();
 }
 
-async function loadFileContent(url) {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const text = await response.text();
-        localStorage.setItem('fileContent', text);
-        window.location.href = 'transponer.html';
-    } catch (error) {
-        console.error('Error al cargar el contenido del archivo:', error);
+function toggleFavorite(file) {
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    const fileIndex = favorites.findIndex(fav => fav.path === file.path);
+
+    if (fileIndex >= 0) {
+        favorites.splice(fileIndex, 1);
+    } else {
+        favorites.push(file);
     }
+
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    updateFavorites();
+}
+
+function updateFavorites() {
+    const favoritesList = document.getElementById('favorites-list');
+    favoritesList.innerHTML = ''; // Limpiar lista de favoritos
+
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites.forEach(file => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+        favoritesList.appendChild(li);
+    });
 }
 
 // Inicializar
