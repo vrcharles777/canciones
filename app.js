@@ -51,7 +51,7 @@ function displayFiles(files, path) {
 
         const li = document.createElement('li');
 
-        // Crear checkbox para archivos
+        // Crear checkbox solo para archivos (no carpetas)
         if (file.type !== 'dir') {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -72,7 +72,7 @@ function displayFiles(files, path) {
         fileList.appendChild(li);
     });
 
-    updateFavorites();
+    updateFavorites(); // Actualizar lista de favoritos después de mostrar los archivos
 }
 
 function toggleFavorite(file, isChecked) {
