@@ -50,60 +50,31 @@ function displayFiles(files, path) {
         }
 
         const li = document.createElement('li');
-
-        // Crear checkbox solo para archivos (no carpetas)
-        if (file.type !== 'dir') {
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.value = file.path;
-            checkbox.addEventListener('change', () => toggleFavorite(file, checkbox.checked));
-            li.appendChild(checkbox);
-        }
-
         if (file.type === 'dir') {
-            li.innerHTML += `<strong>${file.name}/</strong>`;
+            li.innerHTML = `<strong>${file.name}/</strong>`;
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
         } else if (file.name.endsWith('.txt')) {
-            li.innerHTML += `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
+            li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
         } else {
-            li.innerHTML += `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
         }
         fileList.appendChild(li);
     });
-
-    updateFavorites(); // Actualizar lista de favoritos después de mostrar los archivos
 }
 
-function toggleFavorite(file, isChecked) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-
-    if (isChecked) {
-        // Verificar si el archivo ya está en la lista de favoritos
-        const existingIndex = favorites.findIndex(fav => fav.path === file.path);
-        if (existingIndex === -1) {
-            // Agregar archivo a favoritos si no está ya en la lista
-            favorites.push(file);
+async function loadFileContent(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    } else {
-        // Eliminar archivo de favoritos si se desmarca
-        favorites = favorites.filter(fav => fav.path !== file.path);
+        const text = await response.text();
+        localStorage.setItem('fileContent', text);
+        window.location.href = 'transponer.html';
+    } catch (error) {
+        console.error('Error al cargar el contenido del archivo:', error);
     }
-
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    updateFavorites();
-}
-
-function updateFavorites() {
-    const favoritesList = document.getElementById('favorites-list');
-    favoritesList.innerHTML = ''; // Limpiar lista de favoritos
-
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites.forEach(file => {
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
-        favoritesList.appendChild(li);
-    });
 }
 
 // Inicializar
