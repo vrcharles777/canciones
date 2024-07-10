@@ -37,6 +37,24 @@ function displayBreadcrumb(path) {
         button.onclick = () => fetchRepoContents(newPath);
         breadcrumb.appendChild(button);
     });
+
+    // Botón para limpiar favoritos
+    const clearFavoritesButton = document.createElement('button');
+    clearFavoritesButton.innerText = 'Limpiar Favoritos';
+    clearFavoritesButton.style.backgroundColor = 'red';
+    clearFavoritesButton.style.color = 'white';
+    clearFavoritesButton.style.marginLeft = '10px';
+    clearFavoritesButton.onclick = clearFavorites;
+    breadcrumb.appendChild(clearFavoritesButton);
+
+    // Botón para ir a Favoritos
+    const goToFavoritesButton = document.createElement('button');
+    goToFavoritesButton.innerText = 'Ir a Favoritos';
+    goToFavoritesButton.style.backgroundColor = 'grey';
+    goToFavoritesButton.style.color = 'white';
+    goToFavoritesButton.style.marginLeft = '5px';
+    goToFavoritesButton.onclick = () => fetchRepoContents('Favoritos');
+    breadcrumb.appendChild(goToFavoritesButton);
 }
 
 function displayFiles(files, path) {
@@ -50,17 +68,67 @@ function displayFiles(files, path) {
         }
 
         const li = document.createElement('li');
+        
         if (file.type === 'dir') {
             li.innerHTML = `<strong>${file.name}/</strong>`;
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
-        } else if (file.name.endsWith('.txt')) {
-            li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
         } else {
-            li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = file.download_url;
+            checkbox.onchange = () => toggleFavorite(file);
+
+            if (file.name.endsWith('.txt')) {
+                li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
+            } else {
+                li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            }
+
+            li.insertBefore(checkbox, li.firstChild);
         }
+
         fileList.appendChild(li);
     });
+
+    updateFavorites();
+}
+
+function toggleFavorite(file) {
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    const fileIndex = favorites.findIndex(fav => fav.path === file.path);
+
+    if (fileIndex >= 0) {
+        favorites.splice(fileIndex, 1);
+    } else {
+        favorites.push(file);
+    }
+
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    updateFavorites();
+}
+
+function updateFavorites() {
+    const favoritesList = document.getElementById('favorites-list');
+    const favoritesTitle = document.getElementById('favorites-title');
+    favoritesList.innerHTML = ''; // Limpiar lista de favoritos
+
+    // Mostrar favoritos solo si estamos en la carpeta Favoritos
+    if (currentPath === 'Favoritos') {
+        favoritesTitle.style.display = 'block';
+        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        favorites.forEach(file => {
+            const li = document.createElement('li');
+            if (file.name.endsWith('.txt')) {
+                li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
+            } else {
+                li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+            }
+            favoritesList.appendChild(li);
+        });
+    } else {
+        favoritesTitle.style.display = 'none';
+    }
 }
 
 async function loadFileContent(url) {
@@ -75,6 +143,11 @@ async function loadFileContent(url) {
     } catch (error) {
         console.error('Error al cargar el contenido del archivo:', error);
     }
+}
+
+function clearFavorites() {
+    localStorage.removeItem('favorites');
+    updateFavorites(); // Actualizar la lista de favoritos para reflejar los cambios
 }
 
 // Inicializar
