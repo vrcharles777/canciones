@@ -35,10 +35,34 @@
         li strong {
             cursor: pointer;
         }
+        .top-buttons {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+        }
+        .top-buttons button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .top-buttons button.red {
+            background-color: red;
+            color: white;
+        }
+        .top-buttons button.grey {
+            background-color: grey;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <h1>Listado de Canciones</h1>
+    <div class="top-buttons">
+	<button class="grey" id="go-to-favorites-button">Ir a Favoritos</button>
+        <button class="red" id="clear-favorites-button">Limpiar Favoritos</button>
+        
+    </div>
     <div class="breadcrumb" id="breadcrumb"></div>
     <h2 id="favorites-title" style="display: none;">Favoritos</h2>
     <ul id="file-list"></ul>

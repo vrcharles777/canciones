@@ -3,6 +3,9 @@ const repo = 'canciones';
 const branch = 'main'; // Asegúrate de que esta es la rama correcta
 let currentPath = '';
 
+document.getElementById('clear-favorites-button').onclick = clearFavorites;
+document.getElementById('go-to-favorites-button').onclick = () => fetchRepoContents('Favoritos');
+
 async function fetchRepoContents(path = '') {
     const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
     try {
@@ -37,24 +40,6 @@ function displayBreadcrumb(path) {
         button.onclick = () => fetchRepoContents(newPath);
         breadcrumb.appendChild(button);
     });
-
-    // Botón para limpiar favoritos
-    const clearFavoritesButton = document.createElement('button');
-    clearFavoritesButton.innerText = 'Limpiar Favoritos';
-    clearFavoritesButton.style.backgroundColor = 'red';
-    clearFavoritesButton.style.color = 'white';
-    clearFavoritesButton.style.marginLeft = '10px';
-    clearFavoritesButton.onclick = clearFavorites;
-    breadcrumb.appendChild(clearFavoritesButton);
-
-    // Botón para ir a Favoritos
-    const goToFavoritesButton = document.createElement('button');
-    goToFavoritesButton.innerText = 'Ir a Favoritos';
-    goToFavoritesButton.style.backgroundColor = 'grey';
-    goToFavoritesButton.style.color = 'white';
-    goToFavoritesButton.style.marginLeft = '5px';
-    goToFavoritesButton.onclick = () => fetchRepoContents('Favoritos');
-    breadcrumb.appendChild(goToFavoritesButton);
 }
 
 function displayFiles(files, path) {
