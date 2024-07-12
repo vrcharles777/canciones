@@ -59,20 +59,18 @@ function displayFiles(files, path) {
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
         } else {
-            // No agregar checkbox si estamos en la carpeta Favoritos
-            if (currentPath !== 'Favoritos') {
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.value = file.download_url;
-                checkbox.onchange = () => toggleFavorite(file);
-                li.insertBefore(checkbox, li.firstChild);
-            }
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = file.download_url;
+            checkbox.onchange = () => toggleFavorite(file);
 
             if (file.name.endsWith('.txt')) {
-                li.innerHTML += `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
+                li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
             } else {
-                li.innerHTML += `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+                li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
             }
+
+            li.insertBefore(checkbox, li.firstChild);
         }
 
         fileList.appendChild(li);
