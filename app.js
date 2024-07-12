@@ -59,18 +59,19 @@ function displayFiles(files, path) {
             li.style.cursor = 'pointer';
             li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
         } else {
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.value = file.download_url;
-            checkbox.onchange = () => toggleFavorite(file);
+            if (currentPath !== 'Favoritos') { // Agregar checkbox solo si no estamos en Favoritos
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = file.download_url;
+                checkbox.onchange = () => toggleFavorite(file);
+                li.insertBefore(checkbox, li.firstChild);
+            }
 
             if (file.name.endsWith('.txt')) {
                 li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
             } else {
                 li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
             }
-
-            li.insertBefore(checkbox, li.firstChild);
         }
 
         fileList.appendChild(li);
