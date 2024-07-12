@@ -64,6 +64,11 @@ function displayFiles(files, path) {
             checkbox.value = file.download_url;
             checkbox.onchange = () => toggleFavorite(file);
 
+            // Ocultar checkbox si estamos en la carpeta Favoritos
+            if (currentPath === 'Favoritos') {
+                checkbox.style.display = 'none';
+            }
+
             if (file.name.endsWith('.txt')) {
                 li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
             } else {
