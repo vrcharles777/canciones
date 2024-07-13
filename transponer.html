@@ -97,14 +97,21 @@ function saveVirtualFile() {
     const content = document.getElementById('myTextarea').value;
     const fileName = localStorage.getItem('fileName');
     let virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
-    // Filtrar el archivo actual si ya existe para evitar duplicados
+    // Filtrar el archivo actual si ya existe en archivos virtuales para evitar duplicados
     virtualFiles = virtualFiles.filter(file => file.name !== fileName);
     
+    // Eliminar de la lista de favoritos si ya existe un archivo con el mismo nombre
+    favorites = favorites.filter(file => file.name !== fileName);
+
     // Agregar el archivo actualizado
     virtualFiles.push({ name: fileName, content: content });
 
+    // Guardar las listas actualizadas en localStorage
     localStorage.setItem('virtualFiles', JSON.stringify(virtualFiles));
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+
     alert('Archivo guardado virtualmente en Favoritos.');
 
     // Actualizar lista de favoritos si estamos en la carpeta Favoritos
