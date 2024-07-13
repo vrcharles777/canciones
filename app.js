@@ -5,7 +5,7 @@ let currentPath = '';
 
 document.getElementById('clear-favorites-button').onclick = clearFavorites;
 document.getElementById('go-to-favorites-button').onclick = () => fetchRepoContents('Favoritos');
-document.getElementById('clear-virtualfiles-button').onclick = clearVirtualFiles;
+document.getElementById('delete-selected-button').onclick = deleteSelected;
 
 async function fetchRepoContents(path = '') {
     const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
@@ -116,10 +116,16 @@ function updateFavorites() {
         const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
         favorites.forEach(file => {
             const li = document.createElement('li');
+            li.dataset.path = file.path; // Agregar atributo de dataset para identificar el archivo
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'fileToDelete'; // Nombre del grupo de radios
+            radio.value = file.path; // Valor del radio para identificar el archivo
+            li.appendChild(radio);
             if (file.name.endsWith('.txt')) {
-                li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}', '${file.name}')">${file.name}</a>`;
+                li.innerHTML += `<a href="#" onclick="loadFileContent('${file.download_url}', '${file.name}')">${file.name}</a>`;
             } else {
-                li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+                li.innerHTML += `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
             }
             favoritesList.appendChild(li);
         });
@@ -137,7 +143,13 @@ function displayVirtualFiles() {
     
     virtualFiles.forEach(file => {
         const li = document.createElement('li');
-        li.innerHTML = `<a href="#" onclick="loadVirtualFileContent('${file.name}')">${file.name}</a>`;
+        li.dataset.name = file.name; // Agregar atributo de dataset para identificar el archivo
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'fileToDelete'; // Nombre del grupo de radios
+        radio.value = file.name; // Valor del radio para identificar el archivo
+        li.appendChild(radio);
+        li.innerHTML += `<a href="#" onclick="loadVirtualFileContent('${file.name}')">${file.name}</a>`;
         favoritesList.appendChild(li);
     });
 }
@@ -170,12 +182,29 @@ function loadVirtualFileContent(fileName) {
 
 function clearFavorites() {
     localStorage.removeItem('favorites');
+    localStorage.removeItem('virtualFiles'); // Eliminar también los archivos virtuales
     updateFavorites(); // Actualizar la lista de favoritos para reflejar los cambios
 }
 
-function clearVirtualFiles() {
-    localStorage.removeItem('virtualFiles');
-    updateFavorites(); // Actualizar la lista de favoritos para reflejar los cambios
+function deleteSelected() {
+    const selectedRadio = document.querySelector('input[name="fileToDelete"]:checked');
+    
+    if (selectedRadio) {
+        const value = selectedRadio.value;
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
+        
+        // Eliminar el archivo seleccionado de 'favorites' o 'virtualFiles'
+        favorites = favorites.filter(file => file.path !== value);
+        virtualFiles = virtualFiles.filter(file => file.name !== value);
+        
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        localStorage.setItem('virtualFiles', JSON.stringify(virtualFiles));
+        
+        updateFavorites(); // Actualizar la lista de favoritos para reflejar los cambios
+    } else {
+        alert('Selecciona un archivo para eliminar.');
+    }
 }
 
 // Inicializar
