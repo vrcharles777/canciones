@@ -5,6 +5,7 @@ let currentPath = '';
 
 document.getElementById('clear-favorites-button').onclick = clearFavorites;
 document.getElementById('go-to-favorites-button').onclick = () => fetchRepoContents('Favoritos');
+document.getElementById('clear-virtualfiles-button').onclick = clearVirtualFiles;
 
 async function fetchRepoContents(path = '') {
     const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
@@ -15,6 +16,7 @@ async function fetchRepoContents(path = '') {
         }
         const data = await response.json();
         currentPath = path;
+        localStorage.setItem('currentPath', path); // Guardar la ruta actual en localStorage
         displayBreadcrumb(path);
         displayFiles(data, path);
     } catch (error) {
@@ -70,7 +72,7 @@ function displayFiles(files, path) {
             }
 
             if (file.name.endsWith('.txt')) {
-                li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
+                li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}', '${file.name}')">${file.name}</a>`;
             } else {
                 li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
             }
@@ -80,6 +82,11 @@ function displayFiles(files, path) {
 
         fileList.appendChild(li);
     });
+
+    // Mostrar archivos virtuales si estamos en la carpeta Favoritos
+    if (currentPath === 'Favoritos') {
+        displayVirtualFiles();
+    }
 
     updateFavorites();
 }
@@ -110,18 +117,32 @@ function updateFavorites() {
         favorites.forEach(file => {
             const li = document.createElement('li');
             if (file.name.endsWith('.txt')) {
-                li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}')">${file.name}</a>`;
+                li.innerHTML = `<a href="#" onclick="loadFileContent('${file.download_url}', '${file.name}')">${file.name}</a>`;
             } else {
                 li.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
             }
             favoritesList.appendChild(li);
         });
+
+        // Añadir archivos virtuales
+        displayVirtualFiles();
     } else {
         favoritesTitle.style.display = 'none';
     }
 }
 
-async function loadFileContent(url) {
+function displayVirtualFiles() {
+    const favoritesList = document.getElementById('favorites-list');
+    const virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
+    
+    virtualFiles.forEach(file => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="#" onclick="loadVirtualFileContent('${file.name}')">${file.name}</a>`;
+        favoritesList.appendChild(li);
+    });
+}
+
+async function loadFileContent(url, fileName) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -129,14 +150,31 @@ async function loadFileContent(url) {
         }
         const text = await response.text();
         localStorage.setItem('fileContent', text);
+        localStorage.setItem('fileName', fileName);
         window.location.href = 'transponer.html';
     } catch (error) {
         console.error('Error al cargar el contenido del archivo:', error);
     }
 }
 
+function loadVirtualFileContent(fileName) {
+    const virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
+    const virtualFile = virtualFiles.find(file => file.name === fileName);
+
+    if (virtualFile) {
+        localStorage.setItem('fileContent', virtualFile.content);
+        localStorage.setItem('fileName', virtualFile.name);
+        window.location.href = 'transponer.html';
+    }
+}
+
 function clearFavorites() {
     localStorage.removeItem('favorites');
+    updateFavorites(); // Actualizar la lista de favoritos para reflejar los cambios
+}
+
+function clearVirtualFiles() {
+    localStorage.removeItem('virtualFiles');
     updateFavorites(); // Actualizar la lista de favoritos para reflejar los cambios
 }
 

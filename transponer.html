@@ -37,6 +37,7 @@
 <div id="controls">
     <button onclick="myFunction2()">Retroceder</button>
     <button onclick="myFunction()">Avanzar</button>
+    <button onclick="saveVirtualFile()">Guardar</button> <!-- Botón para guardar virtualmente -->
 </div>
 <textarea id="myTextarea"></textarea>
 
@@ -90,6 +91,52 @@ function myFunction2() {
         str2 += x;
     }
     document.getElementById("myTextarea").value = str2;
+}
+
+function saveVirtualFile() {
+    const content = document.getElementById('myTextarea').value;
+    const fileName = localStorage.getItem('fileName');
+    let virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
+
+    // Filtrar el archivo actual si ya existe para evitar duplicados
+    virtualFiles = virtualFiles.filter(file => file.name !== fileName);
+    
+    // Agregar el archivo actualizado
+    virtualFiles.push({ name: fileName, content: content });
+
+    localStorage.setItem('virtualFiles', JSON.stringify(virtualFiles));
+    alert('Archivo guardado virtualmente en Favoritos.');
+
+    // Actualizar lista de favoritos si estamos en la carpeta Favoritos
+    const currentPath = localStorage.getItem('currentPath');
+    if (currentPath === 'Favoritos') {
+        updateFavoritesList();
+    }
+}
+
+function updateFavoritesList() {
+    const favoritesList = document.getElementById('favorites-list');
+    if (!favoritesList) return; // Si no hay lista de favoritos, salir
+
+    favoritesList.innerHTML = '';
+
+    const virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
+    virtualFiles.forEach(file => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="#" onclick="loadVirtualFileContent('${file.name}')">${file.name}</a>`;
+        favoritesList.appendChild(li);
+    });
+}
+
+function loadVirtualFileContent(fileName) {
+    const virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
+    const virtualFile = virtualFiles.find(file => file.name === fileName);
+
+    if (virtualFile) {
+        localStorage.setItem('fileContent', virtualFile.content);
+        localStorage.setItem('fileName', virtualFile.name);
+        window.location.href = 'transponer.html';
+    }
 }
 </script>
 </body>
