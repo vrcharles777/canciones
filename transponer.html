@@ -112,39 +112,10 @@ function saveVirtualFile() {
     localStorage.setItem('virtualFiles', JSON.stringify(virtualFiles));
     localStorage.setItem('favorites', JSON.stringify(favorites));
 
-    alert('Archivo guardado virtualmente en Favoritos.');
-
-    // Actualizar lista de favoritos si estamos en la carpeta Favoritos
-    const currentPath = localStorage.getItem('currentPath');
-    if (currentPath === 'Favoritos') {
-        updateFavoritesList();
-    }
+    // Redirigir a index.html
+    window.location.href = 'index.html';
 }
 
-function updateFavoritesList() {
-    const favoritesList = document.getElementById('favorites-list');
-    if (!favoritesList) return; // Si no hay lista de favoritos, salir
-
-    favoritesList.innerHTML = '';
-
-    const virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
-    virtualFiles.forEach(file => {
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="#" onclick="loadVirtualFileContent('${file.name}')">${file.name}</a>`;
-        favoritesList.appendChild(li);
-    });
-}
-
-function loadVirtualFileContent(fileName) {
-    const virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
-    const virtualFile = virtualFiles.find(file => file.name === fileName);
-
-    if (virtualFile) {
-        localStorage.setItem('fileContent', virtualFile.content);
-        localStorage.setItem('fileName', virtualFile.name);
-        window.location.href = 'transponer.html';
-    }
-}
 </script>
 </body>
 </html>
