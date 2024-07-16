@@ -35,9 +35,9 @@
 </head>
 <body onload="loadContent()">
 <div id="controls">
-    <button onclick="myFunction2()">Bajar</button>
-    <button onclick="myFunction()">Subir</button>
-    <button onclick="saveVirtualFile()">Favoritos</button> <!-- Botón para guardar virtualmente -->
+    <button onclick="myFunction2()">Retroceder</button>
+    <button onclick="myFunction()">Avanzar</button>
+    <button onclick="saveVirtualFile()">Guardar Favoritos</button>
 </div>
 <textarea id="myTextarea"></textarea>
 
@@ -99,23 +99,17 @@ function saveVirtualFile() {
     let virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
-    // Filtrar el archivo actual si ya existe en archivos virtuales para evitar duplicados
     virtualFiles = virtualFiles.filter(file => file.name !== fileName);
-    
-    // Eliminar de la lista de favoritos si ya existe un archivo con el mismo nombre
     favorites = favorites.filter(file => file.name !== fileName);
 
-    // Agregar el archivo actualizado
     virtualFiles.push({ name: fileName, content: content });
 
-    // Guardar las listas actualizadas en localStorage
     localStorage.setItem('virtualFiles', JSON.stringify(virtualFiles));
     localStorage.setItem('favorites', JSON.stringify(favorites));
 
-    // Redirigir a index.html
+    localStorage.setItem('redirectedFromTransponer', 'true'); // Añadir la señal para la redirección
     window.location.href = 'index.html';
 }
-
 </script>
 </body>
 </html>

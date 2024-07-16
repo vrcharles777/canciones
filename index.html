@@ -69,5 +69,18 @@
     <ul id="favorites-list"></ul> <!-- Lista de favoritos -->
     
     <script src="app.js"></script>
+    <script>
+        window.onload = function() {
+            if (localStorage.getItem('redirectedFromTransponer') === 'true') {
+                localStorage.removeItem('redirectedFromTransponer'); // Eliminar la señal después de mostrar la alerta
+                
+                if (confirm("Has sido redirigido desde transponer.html. ¿Quieres ver tus favoritos?")) {
+                    fetchRepoContents('Favoritos'); // Cargar la lista de favoritos
+                } else {
+                    window.location.href = 'index.html'; // Redirigir a index.html
+                }
+            }
+        };
+    </script>
 </body>
 </html>
