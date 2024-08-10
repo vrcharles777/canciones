@@ -1,0 +1,13 @@
+C	Dm	Em	F	G	Am	Bmd
+D	Em	F#m	G	A	Bm	C#md
+E	F#m	G#m	A	B	C#m	D#md
+F	Gm	Am	A#	C	Dm	Emd
+G	Am	Bm	C	D	Em	F#md
+A	Bm	C#m	D	E	F#m	G#md
+B	C#m	D#m	E	F#	G#m	A#md
+
+C#	D#m	Fm	F#	G#	A#m	Cmd
+D#	Fm	Gm	G#	A#	Cm	Dmd
+F#	G#m	A#m	B	C#	D#m	Fmd
+G#	A#m	Cm	C#	D#	Fm	Gmd
+A#	Cm	Dm	D#	F	Gm	Amd

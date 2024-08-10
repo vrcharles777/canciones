@@ -1,0 +1,9 @@
+escalas menores I-VI-III-VII
+--------------------------
+Am-F-C-G
+Bm-G-D-A
+Cm-G#-D#-A#
+Dm-A#-F-C
+Em-C-G-D
+Fm-C#-G#-D#
+Gm-D#-A#-F

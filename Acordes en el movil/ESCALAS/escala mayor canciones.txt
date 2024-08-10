@@ -1,0 +1,9 @@
+escalas mayores I-V-VI-IV
+--------------------------
+C-G-Am-F
+D-A-Bm-G
+E-B-C#m-A
+F-C-Dm-A#
+G-D-Em-C
+A-E-F#m-D
+B-F#-G#m-D#
