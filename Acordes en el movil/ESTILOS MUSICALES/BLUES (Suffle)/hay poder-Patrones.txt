@@ -1,0 +1,12 @@
+mano izquierda 	G6 ={G!-0-B!-0-D!-0-E!-0}
+mano derecha 	G = (([G])-([C])-([G])-([C]))
+
+mano izquierda 	C6 ={C!-0-E!-0-G!-0-A!-0}
+mano derecha 	C = (([C])-([F])-([C])-([F]))
+
+mano izquierda 	D6 ={D!-0-F#!-0-A!-0-B!-0}
+mano derecha 	D = (([D])-([G])-([D])-([G]))
+
+solfeo
+------------
+([C]) = E/G-C

@@ -1,0 +1,7 @@
+-mano izquierda G=(G!-B!-D!-E!-F!-E!-D!-B!)
+-mano izquierda D=(D!-F#!-A!-F#!)
+-mano izquierda C=(C-E-G-A-A#)
+-mano izquierda C=(C-E-G-A-A#-A-G-E)
+-mano izquierda G=(G!-B!-D!-E!-F!-E!-D!-B!)
+-mano izquierda D=(D!-F#!-A!-B!-C!-B!-A!-F#)
+-mano izquierda G=(G!-B!-D!-E!-F!-E!-D!-B!)

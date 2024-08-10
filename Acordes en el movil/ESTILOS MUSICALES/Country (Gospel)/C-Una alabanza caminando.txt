@@ -1,0 +1,6 @@
+Yo soy una alabanza caminando
+-------------------------
+mano derecha: C7 y F7
+{C-E-F-F#-G-A-A#-B-C-B-A#-A-G-F#-F-E}//
+{F-A-A#-B-C-D-D#-E-F-E-D#-D-C-B-A#-A}
+{C-E-F-F#-G-A-A#-B-C-B-A#-A-G-F#-F-E}

@@ -1,0 +1,10 @@
+reglas para el rock and roll
+------------------------------
+-las dos manos al mismo tiempo
+-mano iz-gospel G  ={G!-E!-D!-E!-G!-A!-A#!-B!}
+-mano izquierda G6 ={G!-B!-D!-E!}
+-mano izquierda G67={G!-B!-D!-E!-F!-E!-D!-B!}
+-mano izquierda G = {G/D}!-{G/E}!-{G/D}!-{G/E}!
+-mano izquierda G = {G/D}!!-{G/E}!!-{G/D}!!-{G/E}!!
+
+-mano derecha G = (G!-C!-G!-C!)

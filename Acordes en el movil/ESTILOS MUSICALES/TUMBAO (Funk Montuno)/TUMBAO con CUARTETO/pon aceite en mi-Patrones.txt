@@ -1,0 +1,5 @@
+Em ={{E/b}-{B/e/g}-{E/b}-{B/e/g}}
+Am ={{A/c}-{E/e/a}-{A/c}-{E/e/a}}
+D  ={{D/a}-{A/d/f#}-{D/a}-{A/d/f#}}
+G  ={{G/b}-{D/d/g}-{G/b}-{D/d/g}}
+B  ={{B/d#}-{F#/f/b}-{B/d#}-{F#/f/b}}

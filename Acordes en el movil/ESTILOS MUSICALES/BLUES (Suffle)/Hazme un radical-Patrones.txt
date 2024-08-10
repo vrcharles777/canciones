@@ -1,0 +1,14 @@
+mano izquierda 	G = {G/D}-{G/E}-{G/D}-{G/E}
+mano derecha 	G = (G!-C!-G!-C!)
+
+mano izquierda 	Am = {A/E}-{A/F#}-{A/E}-{A/F#}
+mano derecha 	Am = (Am!-D!-Am!-D!)
+
+mano izquierda 	D = {D/A}-{D/B}-{D/A}-{D/B}
+mano derecha 	D = (D!-G!-D!-G!)
+
+mano izquierda 	C = {C/G}-{C/A}-{C/G}-{C/A}
+mano derecha 	C = (C!-F!-C!-F!)
+
+mano izquierda 	Em = {E/B}-{E/C#}-{E/B}-{E/C#}
+
