@@ -92,13 +92,6 @@
             }
         };
 
-        // Guardar la URL actual antes de redirigir
-        document.getElementById('delete-selected-button').onclick = function() {
-            localStorage.setItem('scrollPositionBeforeRedirect', window.scrollY);
-            localStorage.setItem('currentPath', window.location.href);
-            window.location.href = 'transponer.html';
-        };
-
         function displayVirtualPath(path) {
             const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
             fetch(url)
