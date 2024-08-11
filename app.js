@@ -1,6 +1,6 @@
 const user = 'vrcharles777';
 const repo = 'canciones';
-const branch = 'main'; // Asegúrate de que esta es la rama correcta
+const branch = 'main';
 let currentPath = '';
 
 document.getElementById('clear-favorites-button').onclick = clearFavorites;
@@ -16,7 +16,7 @@ async function fetchRepoContents(path = '') {
         }
         const data = await response.json();
         currentPath = path;
-        localStorage.setItem('currentPath', path); // Guardar la ruta actual en localStorage
+        localStorage.setItem('currentPath', path);
         displayBreadcrumb(path);
         displayFiles(data, path);
     } catch (error) {
@@ -26,10 +26,9 @@ async function fetchRepoContents(path = '') {
 
 function displayBreadcrumb(path) {
     const breadcrumb = document.getElementById('breadcrumb');
-    breadcrumb.innerHTML = ''; // Limpiar ruta anterior
+    breadcrumb.innerHTML = '';
     const pathArray = path ? path.split('/') : [];
     
-    // Crear botón para la raíz
     const rootButton = document.createElement('button');
     rootButton.innerText = 'Root';
     rootButton.onclick = () => fetchRepoContents('');
@@ -46,10 +45,9 @@ function displayBreadcrumb(path) {
 
 function displayFiles(files, path) {
     const fileList = document.getElementById('file-list');
-    fileList.innerHTML = ''; // Limpiar lista anterior
+    fileList.innerHTML = '';
 
     files.forEach(file => {
-        // Filtrar archivos .html y .js
         if (file.name.endsWith('.html') || file.name.endsWith('.js')) {
             return;
         }
@@ -59,14 +57,13 @@ function displayFiles(files, path) {
         if (file.type === 'dir') {
             li.innerHTML = `<strong>${file.name}/</strong>`;
             li.style.cursor = 'pointer';
-            li.onclick = () => fetchRepoContents(file.path); // Navegar dentro de las carpetas
+            li.onclick = () => fetchRepoContents(file.path);
         } else {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.value = file.download_url;
             checkbox.onchange = () => toggleFavorite(file);
 
-            // Ocultar checkbox si estamos en la carpeta Favoritos
             if (currentPath === 'Favoritos') {
                 checkbox.style.display = 'none';
             }
@@ -83,7 +80,6 @@ function displayFiles(files, path) {
         fileList.appendChild(li);
     });
 
-    // Mostrar archivos virtuales si estamos en la carpeta Favoritos
     if (currentPath === 'Favoritos') {
         displayVirtualFiles();
     }
@@ -108,19 +104,18 @@ function toggleFavorite(file) {
 function updateFavorites() {
     const favoritesList = document.getElementById('favorites-list');
     const favoritesTitle = document.getElementById('favorites-title');
-    favoritesList.innerHTML = ''; // Limpiar lista de favoritos
+    favoritesList.innerHTML = '';
 
-    // Mostrar favoritos solo si estamos en la carpeta Favoritos
     if (currentPath === 'Favoritos') {
         favoritesTitle.style.display = 'block';
         const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
         favorites.forEach(file => {
             const li = document.createElement('li');
-            li.dataset.path = file.path; // Agregar atributo de dataset para identificar el archivo
+            li.dataset.path = file.path;
             const radio = document.createElement('input');
             radio.type = 'radio';
-            radio.name = 'fileToDelete'; // Nombre del grupo de radios
-            radio.value = file.path; // Valor del radio para identificar el archivo
+            radio.name = 'fileToDelete';
+            radio.value = file.path;
             li.appendChild(radio);
             if (file.name.endsWith('.txt')) {
                 li.innerHTML += `<a href="#" onclick="loadFileContent('${file.download_url}', '${file.name}')">${file.name}</a>`;
@@ -130,7 +125,6 @@ function updateFavorites() {
             favoritesList.appendChild(li);
         });
 
-        // Añadir archivos virtuales
         displayVirtualFiles();
     } else {
         favoritesTitle.style.display = 'none';
@@ -143,11 +137,11 @@ function displayVirtualFiles() {
     
     virtualFiles.forEach(file => {
         const li = document.createElement('li');
-        li.dataset.name = file.name; // Agregar atributo de dataset para identificar el archivo
+        li.dataset.name = file.name;
         const radio = document.createElement('input');
         radio.type = 'radio';
-        radio.name = 'fileToDelete'; // Nombre del grupo de radios
-        radio.value = file.name; // Valor del radio para identificar el archivo
+        radio.name = 'fileToDelete';
+        radio.value = file.name;
         li.appendChild(radio);
         li.innerHTML += `<a href="#" onclick="loadVirtualFileContent('${file.name}')">${file.name}</a>`;
         favoritesList.appendChild(li);
@@ -182,8 +176,8 @@ function loadVirtualFileContent(fileName) {
 
 function clearFavorites() {
     localStorage.removeItem('favorites');
-    localStorage.removeItem('virtualFiles'); // Eliminar también los archivos virtuales
-    updateFavorites(); // Actualizar la lista de favoritos para reflejar los cambios
+    localStorage.removeItem('virtualFiles');
+    updateFavorites();
 }
 
 function deleteSelected() {
@@ -194,14 +188,13 @@ function deleteSelected() {
         let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
         let virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
         
-        // Eliminar el archivo seleccionado de 'favorites' o 'virtualFiles'
         favorites = favorites.filter(file => file.path !== value);
         virtualFiles = virtualFiles.filter(file => file.name !== value);
         
         localStorage.setItem('favorites', JSON.stringify(favorites));
         localStorage.setItem('virtualFiles', JSON.stringify(virtualFiles));
         
-        updateFavorites(); // Actualizar la lista de favoritos para reflejar los cambios
+        updateFavorites();
     } else {
         alert('Selecciona un archivo para eliminar.');
     }

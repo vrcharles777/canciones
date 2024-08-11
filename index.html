@@ -61,12 +61,12 @@
     <div class="top-buttons">
         <button class="grey" id="go-to-favorites-button">Ir a Favoritos</button>
         <button class="red" id="clear-favorites-button">Limpiar Favoritos</button>
-        <button class="red" id="delete-selected-button">Eliminar Seleccionado</button> <!-- Botón añadido -->
+        <button class="red" id="delete-selected-button">Eliminar Seleccionado</button>
     </div>
     <div class="breadcrumb" id="breadcrumb"></div>
     <h2 id="favorites-title" style="display: none;">Favoritos</h2>
     <ul id="file-list"></ul>
-    <ul id="favorites-list"></ul> <!-- Lista de favoritos -->
+    <ul id="favorites-list"></ul>
     
     <script src="app.js"></script>
     <script>
@@ -78,18 +78,23 @@
             }
 
             if (localStorage.getItem('redirectedFromTransponer') === 'true') {
-                localStorage.removeItem('redirectedFromTransponer'); // Eliminar la señal después de mostrar la alerta
+                localStorage.removeItem('redirectedFromTransponer');
                 
                 if (confirm("Has sido redirigido desde transponer.html. ¿Quieres ver tus favoritos?")) {
-                    fetchRepoContents('Favoritos'); // Cargar la lista de favoritos
+                    fetchRepoContents('Favoritos');
                 } else {
-                    // Mostrar contenido virtual de la ubicación guardada en 'currentPath' si se cancela
                     const currentPath = localStorage.getItem('currentPath');
                     if (currentPath) {
                         displayVirtualPath(currentPath);
                     }
                 }
             }
+        };
+
+        document.getElementById('delete-selected-button').onclick = function() {
+            localStorage.setItem('scrollPositionBeforeRedirect', window.scrollY);
+            localStorage.setItem('currentPath', window.location.href);
+            deleteSelected(); // Cambiado de redirección a función de eliminación
         };
 
         function displayVirtualPath(path) {
