@@ -9,27 +9,32 @@
             padding: 0;
             width: 100%;
             height: 100%;
+            overflow: hidden; /* Oculta el desbordamiento */
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
         #controls {
             width: 100%;
             display: flex;
-            justify-content: space-between;
+            justify-content: center; /* Centra los botones */
+            background-color: #f0f0f0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            position: fixed;
+            top: 0;
+            transition: top 0.3s;
         }
         button {
-            flex: 1;
             margin: 5px;
             padding: 10px;
             font-size: 1.2em;
         }
         #myTextarea {
-            width: 95%;
-            height: 80%;
-            margin: 10px 0;
+            flex: 1;
+            width: 100%;
+            margin-top: 60px; /* Ajusta este margen para que el textarea no se superponga a los botones */
             font-size: 1.2em;
+            box-sizing: border-box;
+            transition: margin-top 0.3s; /* Transición suave para el ajuste del margen */
         }
     </style>
 </head>
@@ -42,6 +47,8 @@
 <textarea id="myTextarea"></textarea>
 
 <script>
+let timeout;
+
 function loadContent() {
     const content = localStorage.getItem('fileContent');
     if (content) {
@@ -110,6 +117,29 @@ function saveVirtualFile() {
     localStorage.setItem('redirectedFromTransponer', 'true'); // Añadir la señal para la redirección
     window.location.href = 'index.html';
 }
+
+// Función para ocultar los controles después de 2 segundos de inactividad
+function hideControls() {
+    document.getElementById('controls').style.top = '-60px'; // Ajusta este valor según la altura de tus botones
+    document.getElementById('myTextarea').style.marginTop = '0';
+}
+
+// Función para mostrar los controles
+function showControls() {
+    clearTimeout(timeout);
+    document.getElementById('controls').style.top = '0';
+    document.getElementById('myTextarea').style.marginTop = '60px'; // Ajusta este valor según la altura de tus botones
+    timeout = setTimeout(hideControls, 2000); // Establece el tiempo de espera para ocultar los controles
+}
+
+// Configura los eventos para mostrar los controles al hacer clic
+document.addEventListener('mousemove', showControls);
+document.addEventListener('mousedown', showControls);
+document.addEventListener('keydown', showControls);
+
+window.onload = function() {
+    timeout = setTimeout(hideControls, 2000); // Establece el tiempo de espera inicial para ocultar los controles
+};
 </script>
 </body>
 </html>
