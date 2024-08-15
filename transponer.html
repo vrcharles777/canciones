@@ -16,6 +16,7 @@
         #controls {
             width: 100%;
             display: flex;
+            flex-wrap: wrap; /* Permite que los botones se ajusten en múltiples líneas */
             justify-content: center; /* Centra los botones */
             background-color: #f0f0f0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
@@ -24,17 +25,27 @@
             transition: top 0.3s;
         }
         button {
+            flex: 1 1 100px; /* Los botones ocupan un mínimo de 100px y se expanden según el espacio disponible */
             margin: 5px;
             padding: 10px;
-            font-size: 1.2em;
+            font-size: 1em; /* Tamaño de fuente ajustado para pantallas pequeñas */
+            box-sizing: border-box; /* Asegura que el padding y border se incluyan en el tamaño total */
         }
         #myTextarea {
             flex: 1;
             width: 100%;
             margin-top: 60px; /* Ajusta este margen para que el textarea no se superponga a los botones */
-            font-size: 1.2em;
+            font-size: 1em; /* Tamaño de fuente ajustado para pantallas pequeñas */
             box-sizing: border-box;
             transition: margin-top 0.3s; /* Transición suave para el ajuste del margen */
+        }
+        @media (max-width: 600px) {
+            button {
+                font-size: 0.9em; /* Ajusta el tamaño de la fuente para pantallas más pequeñas */
+            }
+            #myTextarea {
+                font-size: 0.9em; /* Ajusta el tamaño de la fuente del textarea para pantallas más pequeñas */
+            }
         }
     </style>
 </head>
@@ -49,7 +60,6 @@
 <script>
 let timeout;
 
-// Función para cargar el contenido del archivo guardado en el localStorage
 function loadContent() {
     const content = localStorage.getItem('fileContent');
     if (content) {
@@ -57,7 +67,6 @@ function loadContent() {
     }
 }
 
-// Función para transformar la cadena en notas musicales
 function myFunction() {
     var lista = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B','C'];
     var str = document.getElementById("myTextarea").value;
@@ -80,7 +89,6 @@ function myFunction() {
     document.getElementById("myTextarea").value = str2;
 }
 
-// Función para transformar la cadena en notas musicales en otra dirección
 function myFunction2() {
     var lista2 = ['B','A#','A','G#','G','F#','F','E','D#','D','C#','C','B'];
     var str = document.getElementById("myTextarea").value;
@@ -105,7 +113,12 @@ function myFunction2() {
 
 function saveVirtualFile() {
     const content = document.getElementById('myTextarea').value;
-    const fileName = localStorage.getItem('fileName');
+    const fileName = localStorage.getItem('fileName') || 'defaultFileName'; // Usa un valor predeterminado si no hay fileName
+    if (!fileName) {
+        alert('No se ha definido un nombre de archivo.'); // Mensaje de error si fileName no está definido
+        return;
+    }
+
     let virtualFiles = JSON.parse(localStorage.getItem('virtualFiles')) || [];
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
