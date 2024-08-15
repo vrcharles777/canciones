@@ -49,6 +49,7 @@
 <script>
 let timeout;
 
+// Función para cargar el contenido del archivo guardado en el localStorage
 function loadContent() {
     const content = localStorage.getItem('fileContent');
     if (content) {
@@ -56,6 +57,7 @@ function loadContent() {
     }
 }
 
+// Función para transformar la cadena en notas musicales
 function myFunction() {
     var lista = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B','C'];
     var str = document.getElementById("myTextarea").value;
@@ -78,6 +80,7 @@ function myFunction() {
     document.getElementById("myTextarea").value = str2;
 }
 
+// Función para transformar la cadena en notas musicales en otra dirección
 function myFunction2() {
     var lista2 = ['B','A#','A','G#','G','F#','F','E','D#','D','C#','C','B'];
     var str = document.getElementById("myTextarea").value;
@@ -137,9 +140,6 @@ document.addEventListener('mousemove', showControls);
 document.addEventListener('mousedown', showControls);
 document.addEventListener('keydown', showControls);
 
-window.onload = function() {
-    timeout = setTimeout(hideControls, 2000); // Establece el tiempo de espera inicial para ocultar los controles
-};
 </script>
 </body>
 </html>
