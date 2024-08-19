@@ -54,14 +54,40 @@
             background-color: grey;
             color: white;
         }
+        .top-buttons button.blue {
+            background-color: #007bff;
+            color: white;
+        }
+        #search-panel {
+            display: none;
+            position: sticky;
+            top: 60px; /* Ajusta esto para que quede justo debajo de los botones */
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            z-index: 999; /* Asegura que esté por encima del contenido, pero debajo de la barra de navegación */
+        }
+        #search-panel input {
+            margin-right: 10px;
+        }
+        .highlight {
+            background-color: yellow;
+        }
     </style>
 </head>
 <body>
-    <h1>Chord Charts</h1>
+    <h1>Listado de Canciones</h1>
     <div class="top-buttons">
         <button class="grey" id="go-to-favorites-button">Ir a Favoritos</button>
         <button class="red" id="clear-favorites-button">Limpiar Favoritos</button>
         <button class="red" id="delete-selected-button">Eliminar Seleccionado</button>
+        <button class="blue" id="search-button">Busqueda</button>
+    </div>
+    <div id="search-panel">
+        <input type="text" id="search-box" placeholder="Buscar...">
+        <button id="prev-btn">Anterior</button>
+        <button id="next-btn">Siguiente</button>
+        <span id="search-info"></span>
     </div>
     <div class="breadcrumb" id="breadcrumb"></div>
     <h2 id="favorites-title" style="display: none;">Favoritos</h2>
@@ -89,6 +115,10 @@
                     }
                 }
             }
+
+            document.getElementById('search-button').onclick = function() {
+                window.location.href = 'busqueda.html';
+            };
         };
 
         document.getElementById('delete-selected-button').onclick = function() {

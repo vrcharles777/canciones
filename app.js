@@ -46,19 +46,21 @@ function displayBreadcrumb(path) {
 function displayFiles(files, path) {
     const fileList = document.getElementById('file-list');
     fileList.innerHTML = '';
+    const searchPanel = document.getElementById('search-panel');
+
+    const folders = [];
+    const fileItems = [];
 
     files.forEach(file => {
         if (file.name.endsWith('.html') || file.name.endsWith('.js')) {
             return;
         }
 
-        const li = document.createElement('li');
-        
         if (file.type === 'dir') {
-            li.innerHTML = `<strong>${file.name}/</strong>`;
-            li.style.cursor = 'pointer';
-            li.onclick = () => fetchRepoContents(file.path);
+            folders.push(file);
         } else {
+            const li = document.createElement('li');
+
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.value = file.download_url;
@@ -75,16 +77,80 @@ function displayFiles(files, path) {
             }
 
             li.insertBefore(checkbox, li.firstChild);
+            fileItems.push(li);
         }
-
-        fileList.appendChild(li);
     });
+
+    if (fileItems.length > 0) {
+        searchPanel.style.display = 'block';
+        fileItems.forEach(item => fileList.appendChild(item));
+    } else {
+        searchPanel.style.display = 'none';
+    }
+
+    if (folders.length > 0) {
+        folders.forEach(folder => {
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${folder.name}/</strong>`;
+            li.style.cursor = 'pointer';
+            li.onclick = () => fetchRepoContents(folder.path);
+            fileList.appendChild(li);
+        });
+    }
 
     if (currentPath === 'Favoritos') {
         displayVirtualFiles();
     }
 
     updateFavorites();
+    setupSearchFunctionality();
+}
+
+function setupSearchFunctionality() {
+    const searchBox = document.getElementById('search-box');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const searchInfo = document.getElementById('search-info');
+    let allMatches = [];
+    let currentMatchIndex = -1;
+
+    function highlightMatches(text) {
+        const searchTerm = searchBox.value.trim();
+        if (!searchTerm) return text;
+        const regex = new RegExp(searchTerm, 'gi');
+        return text.replace(regex, match => `<span class="highlight">${match}</span>`);
+    }
+
+    function updateFileContents() {
+        document.querySelectorAll('#file-list a').forEach(el => {
+            el.innerHTML = highlightMatches(el.innerText);
+        });
+    }
+
+    function updateSearchInfo() {
+        allMatches = Array.from(document.querySelectorAll('.highlight'));
+        if (allMatches.length === 0) {
+            searchInfo.textContent = 'No se encontraron coincidencias';
+        } else {
+            searchInfo.textContent = `Coincidencia ${currentMatchIndex + 1} de ${allMatches.length}`;
+        }
+    }
+
+    function navigateMatches(direction) {
+        if (allMatches.length === 0) return;
+        currentMatchIndex = (currentMatchIndex + direction + allMatches.length) % allMatches.length;
+        const currentMatch = allMatches[currentMatchIndex];
+        currentMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        updateSearchInfo();
+    }
+
+    searchBox.addEventListener('input', () => {
+        updateFileContents();
+        updateSearchInfo();
+    });
+
+    prevBtn.onclick = () => navigateMatches(-1);
+    nextBtn.onclick = () => navigateMatches(1);
 }
 
 function toggleFavorite(file) {

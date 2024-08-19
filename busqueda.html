@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Archivos .txt desde GitHub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #search-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f0f0f0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 100;
+            display: none; /* Oculto al principio */
+            padding: 10px;
+            box-sizing: border-box;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #search-box {
+            flex: 1;
+            margin-right: 10px;
+            padding: 5px;
+        }
+
+        #controls {
+            margin-top: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #file-list {
+            margin-top: 80px;
+            overflow-y: auto;
+            height: calc(100vh - 80px);
+            padding: 10px;
+        }
+
+        button {
+            margin: 0 5px;
+            padding: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .file-item {
+            margin-bottom: 20px;
+        }
+
+        .file-content {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .file-link {
+            color: #0366d6;
+            text-decoration: none;
+        }
+
+        .file-link:hover {
+            text-decoration: underline;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+
+        .highlight-route {
+            background-color: #d3d3d3;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .highlight-match {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="search-container">
+        <input type="text" id="search-box" placeholder="Buscar...">
+        <button id="prev-btn">Anterior</button>
+        <button id="next-btn">Siguiente</button>
+        <span id="search-info"></span>
+    </div>
+
+    <div id="controls">
+        <button id="load-txt-button">Cargar Archivos .txt</button>
+    </div>
+
+    <div id="folder-list"></div>
+    <div id="file-list"></div>
+
+    <script>
+        const user = 'vrcharles777';
+        const repo = 'canciones';
+        const branch = 'main';
+        const githubToken = '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';
+
+        let fileContents = {}; // Almacena el contenido de los archivos para búsqueda
+
+        // Cargar carpetas en la raíz del repositorio
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const rootContents = await fetchRepoContents('');
+                displayFolders(rootContents);
+            } catch (error) {
+                console.error('Error al listar carpetas:', error);
+                alert('Hubo un error al listar las carpetas. Revisa la consola para más detalles.');
+            }
+        });
+
+        // Función para mostrar carpetas con checkboxes
+        function displayFolders(contents) {
+            const folderListDiv = document.getElementById('folder-list');
+            contents.forEach(item => {
+                if (item.type === 'dir') {
+                    const folderDiv = document.createElement('div');
+                    folderDiv.classList.add('folder-item');
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = item.path;
+                    folderDiv.appendChild(checkbox);
+
+                    const label = document.createElement('label');
+                    label.textContent = item.name;
+                    folderDiv.appendChild(label);
+
+                    folderListDiv.appendChild(folderDiv);
+                }
+            });
+        }
+
+        // Función para obtener el contenido de un repositorio
+        async function fetchRepoContents(path = '') {
+            const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: `token ${githubToken}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error al obtener el contenido del repositorio:', error);
+                return [];
+            }
+        }
+
+        // Función para obtener el contenido de un archivo
+        async function fetchFileContent(filePath) {
+            const url = `https://api.github.com/repos/${user}/${repo}/contents/${filePath}?ref=${branch}`;
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: `token ${githubToken}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                return atob(data.content);
+            } catch (error) {
+                console.error('Error al obtener el contenido del archivo:', error);
+                return '';
+            }
+        }
+
+        document.getElementById('load-txt-button').onclick = async () => {
+            const selectedFolders = Array.from(document.querySelectorAll('#folder-list input[type="checkbox"]:checked')).map(cb => cb.value);
+            if (selectedFolders.length === 0) {
+                alert('Por favor, selecciona al menos una carpeta.');
+                return;
+            }
+
+            // Eliminar carpetas y botón de carga
+            document.getElementById('folder-list').remove();
+            document.getElementById('controls').remove();
+            document.getElementById('search-container').style.display = 'flex';
+
+            const fileListDiv = document.getElementById('file-list');
+            fileListDiv.innerHTML = ''; // Limpiar resultados anteriores
+
+            try {
+                for (const folder of selectedFolders) {
+                    const folderContents = await fetchRepoContents(folder);
+                    await listTxtFilesInFolder(folderContents, folder);
+                }
+            } catch (error) {
+                console.error('Error al listar archivos .txt:', error);
+                alert('Hubo un error al listar los archivos. Revisa la consola para más detalles.');
+            }
+        };
+
+        async function listTxtFilesInFolder(files, currentPath) {
+            for (const file of files) {
+                const filePath = `${currentPath}/${file.name}`.replace(/^\//, '');
+
+                if (file.type === 'dir') {
+                    const folderContents = await fetchRepoContents(file.path);
+                    await listTxtFilesInFolder(folderContents, filePath);
+                } else if (file.name.endsWith('.txt')) {
+                    try {
+                        const fileContent = await fetchFileContent(filePath);
+                        fileContents[filePath] = fileContent; // Almacenar contenido para búsqueda
+                        displayFileContent(filePath, fileContent);
+                    } catch (error) {
+                        console.error(`Error al obtener el contenido del archivo ${filePath}:`, error);
+                        displayFileContent(filePath, 'No se pudo obtener el contenido del archivo.');
+                    }
+                }
+            }
+        }
+
+        function displayFileContent(filePath, fileContent) {
+            const fileListDiv = document.getElementById('file-list');
+            const div = document.createElement('div');
+            div.classList.add('file-item');
+
+            // Mostrar ruta del archivo con enlace
+            const link = document.createElement('a');
+            link.href = '#';
+            link.target = '_blank'; // Abre en una nueva pestaña
+            link.textContent = filePath;
+            link.classList.add('file-link');
+            link.onclick = () => {
+                localStorage.setItem('fileContent', fileContent);
+                localStorage.setItem('fileName', filePath);
+                window.open('transponer.html', '_blank'); // Abre en una nueva pestaña
+            };
+            div.appendChild(link);
+
+            // Mostrar contenido del archivo
+            const pre = document.createElement('pre');
+            pre.classList.add('file-content');
+            pre.innerHTML = fileContent;
+            div.appendChild(pre);
+
+            fileListDiv.appendChild(div);
+        }
+
+        function highlightMatches(text, isRoute) {
+            const searchTerm = document.getElementById('search-box').value.trim();
+            if (!searchTerm) return text;
+
+            const regex = new RegExp(searchTerm, 'gi');
+            return text.replace(regex, match => `<span class="${isRoute ? 'highlight-route' : 'highlight'}">${match}</span>`);
+        }
+
+        function updateFileContents() {
+            document.querySelectorAll('.file-content').forEach(el => {
+                el.innerHTML = highlightMatches(el.innerText, false);
+            });
+            document.querySelectorAll('.file-link').forEach(el => {
+                el.innerHTML = highlightMatches(el.innerText, true);
+            });
+        }
+
+        document.getElementById('search-box').addEventListener('input', () => {
+            updateFileContents();
+            updateSearchInfo();
+        });
+
+        let currentMatchIndex = -1;
+        let allMatches = [];
+
+        function updateSearchInfo() {
+            allMatches = Array.from(document.querySelectorAll('.highlight, .highlight-route'));
+            const searchInfo = document.getElementById('search-info');
+            if (allMatches.length === 0) {
+                searchInfo.textContent = 'No se encontraron coincidencias';
+            } else {
+                searchInfo.textContent = `Coincidencia ${currentMatchIndex + 1} de ${allMatches.length}`;
+            }
+        }
+
+        function navigateMatches(direction) {
+            if (allMatches.length === 0) return;
+            currentMatchIndex = (currentMatchIndex + direction + allMatches.length) % allMatches.length;
+            const currentMatch = allMatches[currentMatchIndex];
+            currentMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            updateSearchInfo();
+        }
+
+        document.getElementById('prev-btn').onclick = () => navigateMatches(-1);
+        document.getElementById('next-btn').onclick = () => navigateMatches(1);
+
+    </script>
+</body>
+</html>
