@@ -15,5 +15,17 @@ jobs:
 
     - name: Create token file
       run: |
-        echo "{\"githubToken\": \"${{ secrets.SECRETO}}\"}" > token.json
-        # Aquí puedes añadir otros pasos para desplegar el HTML o usar un servidor
+        echo "{\"githubToken\": \"${{ secrets.SECRETO }}\"}" > token.json
+
+    - name: Move token.json to docs folder
+      run: |
+        mkdir -p docs
+        mv token.json docs/token.json
+
+    - name: Commit and push token.json
+      run: |
+        git config --local user.name "github-actions"
+        git config --local user.email "github-actions@github.com"
+        git add docs/token.json
+        git commit -m "Add token.json"
+        git push
