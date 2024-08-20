@@ -15,10 +15,11 @@ jobs:
 
     - name: Replace token in HTML
       run: |
-        sed -i 's/__GITHUB_TOKEN__/${{ secrets.SECRETO }}/g' path/to/your/index.html
+        # Reemplazar el marcador de posición en busqueda.html
+        sed -i 's/__GITHUB_TOKEN__/${{ secrets.SECRETO }}/g' busqueda.html
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.SECRETO }}
-        publish_dir: ./path/to/deploy
+        publish_dir: ./ # Directorio a publicar en GitHub Pages
