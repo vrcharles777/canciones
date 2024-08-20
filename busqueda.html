@@ -120,22 +120,17 @@
         const repo = 'canciones';
         const branch = 'main';
 
-        // Almacena el token en localStorage si no está presente
+        // Verifica si el token ya está almacenado en localStorage
         document.addEventListener('DOMContentLoaded', async () => {
-            const storedToken = localStorage.getItem('githubToken');
-            if (!storedToken) {
-                // Puedes reemplazar esto por una entrada de usuario o una forma más segura
-                const apiToken = prompt('Introduce tu token de GitHub:');
-                if (apiToken) {
-                    localStorage.setItem('githubToken', apiToken);
-                } else {
-                    alert('Se necesita un token para continuar.');
-                    return;
-                }
+            let githubToken = localStorage.getItem('githubToken');
+            if (!githubToken) {
+                // Simula obtener el token del entorno, ya que `process.env.SECRETO` no es accesible en el navegador
+                githubToken = 'tu-token-aqui'; // Reemplaza esto con tu método para obtener el token en la primera carga
+                localStorage.setItem('githubToken', githubToken);
             }
 
             try {
-                const rootContents = await fetchRepoContents('');
+                const rootContents = await fetchRepoContents('', githubToken);
                 displayFolders(rootContents);
             } catch (error) {
                 console.error('Error al listar carpetas:', error);
@@ -166,9 +161,8 @@
         }
 
         // Función para obtener el contenido de un repositorio
-        async function fetchRepoContents(path = '') {
+        async function fetchRepoContents(path = '', token) {
             const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
-            const token = localStorage.getItem('githubToken');
             try {
                 const response = await fetch(url, {
                     headers: {
@@ -186,9 +180,8 @@
         }
 
         // Función para obtener el contenido de un archivo
-        async function fetchFileContent(filePath) {
+        async function fetchFileContent(filePath, token) {
             const url = `https://api.github.com/repos/${user}/${repo}/contents/${filePath}?ref=${branch}`;
-            const token = localStorage.getItem('githubToken');
             try {
                 const response = await fetch(url, {
                     headers: {
@@ -221,10 +214,12 @@
             const fileListDiv = document.getElementById('file-list');
             fileListDiv.innerHTML = ''; // Limpiar resultados anteriores
 
+            let githubToken = localStorage.getItem('githubToken');
+
             try {
                 for (const folder of selectedFolders) {
-                    const folderContents = await fetchRepoContents(folder);
-                    await listTxtFilesInFolder(folderContents, folder);
+                    const folderContents = await fetchRepoContents(folder, githubToken);
+                    await listTxtFilesInFolder(folderContents, folder, githubToken);
                 }
             } catch (error) {
                 console.error('Error al listar archivos .txt:', error);
@@ -232,16 +227,16 @@
             }
         };
 
-        async function listTxtFilesInFolder(files, currentPath) {
+        async function listTxtFilesInFolder(files, currentPath, token) {
             for (const file of files) {
                 const filePath = `${currentPath}/${file.name}`.replace(/^\//, '');
 
                 if (file.type === 'dir') {
-                    const folderContents = await fetchRepoContents(file.path);
-                    await listTxtFilesInFolder(folderContents, filePath);
+                    const folderContents = await fetchRepoContents(file.path, token);
+                    await listTxtFilesInFolder(folderContents, filePath, token);
                 } else if (file.name.endsWith('.txt')) {
                     try {
-                        const fileContent = await fetchFileContent(filePath);
+                        const fileContent = await fetchFileContent(filePath, token);
                         fileContents[filePath] = fileContent; // Almacenar contenido para búsqueda
                         displayFileContent(filePath, fileContent);
                     } catch (error) {
