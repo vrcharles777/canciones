@@ -119,7 +119,7 @@
         const user = 'vrcharles777';
         const repo = 'canciones';
         const branch = 'main';
-        const githubToken = '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';
+        const githubToken = process.env.SECRETO; // Obtener token desde el entorno
 
         let fileContents = {}; // Almacena el contenido de los archivos para búsqueda
 

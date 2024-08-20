@@ -1,0 +1,22 @@
+name: Deploy HTML with GitHub Token
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+
+    - name: Deploy and run script
+      run: |
+        echo "Deploying HTML script..."
+        export SECRETO=${{ secrets.SECRETO }}
+        # Aquí podrías ejecutar un servidor local para ver el HTML
+        # o hacer cualquier otra tarea de despliegue que desees.
+        # Por ejemplo, podrías subir el HTML a GitHub Pages o algún otro servicio.
