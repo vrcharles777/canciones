@@ -121,21 +121,22 @@
         const branch = 'main';
         let githubToken = '';
 
-        // Función para cargar el token desde el archivo JSON
-        async function loadToken() {
-            try {
-                const response = await fetch('token.json');
-                const data = await response.json();
-                githubToken = data.githubToken;
-            } catch (error) {
-                console.error('Error al cargar el token:', error);
-            }
+    // Función para cargar el token desde el archivo JSON
+    async function loadToken() {
+        try {
+            const response = await fetch('docs/token.json'); // Cambiar la ruta aquí
+            const data = await response.json();
+            githubToken = data.githubToken;
+            console.log("Token cargado correctamente:", githubToken); // Para confirmar que se carga correctamente
+        } catch (error) {
+            console.error('Error al cargar el token:', error);
         }
+    }
 
-        // Llama a la función para cargar el token antes de cualquier otra acción que lo necesite
-        loadToken().then(() => {
-            // Tu lógica aquí, asegurándote de que githubToken esté disponible.
-        });
+    // Llama a la función para cargar el token antes de cualquier otra acción que lo necesite
+    loadToken().then(() => {
+        // Aquí empieza tu lógica, asegurándote de que githubToken esté disponible.
+    });
 
         let fileContents = {}; // Almacena el contenido de los archivos para búsqueda
 
