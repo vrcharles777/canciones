@@ -13,19 +13,12 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v3
 
-    - name: Create token file
+    - name: Replace token in HTML
       run: |
-        echo "{\"githubToken\": \"${{ secrets.SECRETO }}\"}" > token.json
+        sed -i 's/__GITHUB_TOKEN__/${{ secrets.SECRETO }}/g' path/to/your/index.html
 
-    - name: Move token.json to docs folder
-      run: |
-        mkdir -p docs
-        mv token.json docs/token.json
-
-    - name: Commit and push token.json
-      run: |
-        git config --local user.name "github-actions"
-        git config --local user.email "github-actions@github.com"
-        git add docs/token.json
-        git commit -m "Add token.json"
-        git push
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.SECRETO }}
+        publish_dir: ./path/to/deploy
