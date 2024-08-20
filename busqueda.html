@@ -119,12 +119,21 @@
         const user = 'vrcharles777';
         const repo = 'canciones';
         const branch = 'main';
-        const githubToken = 'process.env.SECRETO';
 
-        let fileContents = {}; // Almacena el contenido de los archivos para búsqueda
-
-        // Cargar carpetas en la raíz del repositorio
+        // Almacena el token en localStorage si no está presente
         document.addEventListener('DOMContentLoaded', async () => {
+            const storedToken = localStorage.getItem('githubToken');
+            if (!storedToken) {
+                // Puedes reemplazar esto por una entrada de usuario o una forma más segura
+                const apiToken = prompt('Introduce tu token de GitHub:');
+                if (apiToken) {
+                    localStorage.setItem('githubToken', apiToken);
+                } else {
+                    alert('Se necesita un token para continuar.');
+                    return;
+                }
+            }
+
             try {
                 const rootContents = await fetchRepoContents('');
                 displayFolders(rootContents);
@@ -159,10 +168,11 @@
         // Función para obtener el contenido de un repositorio
         async function fetchRepoContents(path = '') {
             const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
+            const token = localStorage.getItem('githubToken');
             try {
                 const response = await fetch(url, {
                     headers: {
-                        Authorization: `token ${githubToken}`
+                        Authorization: `token ${token}`
                     }
                 });
                 if (!response.ok) {
@@ -178,10 +188,11 @@
         // Función para obtener el contenido de un archivo
         async function fetchFileContent(filePath) {
             const url = `https://api.github.com/repos/${user}/${repo}/contents/${filePath}?ref=${branch}`;
+            const token = localStorage.getItem('githubToken');
             try {
                 const response = await fetch(url, {
                     headers: {
-                        Authorization: `token ${githubToken}`
+                        Authorization: `token ${token}`
                     }
                 });
                 if (!response.ok) {
