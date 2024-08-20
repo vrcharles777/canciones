@@ -119,7 +119,17 @@
         const user = 'vrcharles777';
         const repo = 'canciones';
         const branch = 'main';
-        const githubToken = '__GITHUB_TOKEN__'; // Marcador de posición
+        const githubToken = '__GITHUB_TOKEN__'; // Marcador de posición para el token
+
+        // Función para cargar el token desde el archivo JSON
+        async function loadToken() {
+            // El token será reemplazado antes de que el archivo se despliegue
+        }
+
+        // Llama a la función para cargar el token antes de cualquier otra acción que lo necesite
+        loadToken().then(() => {
+            // Tu lógica aquí, asegurándote de que githubToken esté disponible.
+        });
 
         let fileContents = {}; // Almacena el contenido de los archivos para búsqueda
 
