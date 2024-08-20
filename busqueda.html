@@ -157,23 +157,25 @@
         }
 
         // Función para obtener el contenido de un repositorio
-        async function fetchRepoContents(path = '') {
-            const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
-            try {
-                const response = await fetch(url, {
-                    headers: {
-                        Authorization: `token ${githubToken}`
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return await response.json();
-            } catch (error) {
-                console.error('Error al obtener el contenido del repositorio:', error);
-                return [];
+async function fetchRepoContents(path = '') {
+    const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
+    try {
+        // Verifica que el token sigue siendo válido
+        const response = await fetch(url, {
+            headers: {
+                Authorization: `token ${githubToken}`  // Usa el token
             }
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return await response.json();
+    } catch (error) {
+        console.error('Error al obtener el contenido del repositorio:', error);
+        return [];
+    }
+}
+
 
         // Función para obtener el contenido de un archivo
         async function fetchFileContent(filePath) {
