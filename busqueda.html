@@ -7,64 +7,63 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
-        .breadcrumb {
-            margin-bottom: 20px;
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-bottom: 1px solid #dee2e6;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            box-sizing: border-box;
         }
 
         #search-container {
-            display: none;
-            position: sticky;
+            position: fixed;
             top: 0;
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-bottom: 1px solid #dee2e6;
-            z-index: 999;
+            left: 0;
             width: 100%;
+            background-color: #f0f0f0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 100;
+            display: none; /* Oculto al principio */
+            padding: 10px;
             box-sizing: border-box;
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             align-items: center;
         }
 
         #search-box {
-            width: 100%;
-            max-width: 400px;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
+            flex: 1;
+            margin-right: 10px;
+            padding: 5px;
+            min-width: 200px;
         }
 
-        #search-buttons {
+        #search-container button {
+            margin: 5px;
+            padding: 5px 10px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        #controls {
+            margin-top: 60px;
             display: flex;
             justify-content: center;
-            width: 100%;
+            padding: 10px;
         }
 
-        #search-buttons button {
+        #controls button {
             margin: 0 5px;
-            padding: 10px;
-            flex: 1;
-            box-sizing: border-box;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
         }
 
         #file-list {
-            flex: 1;
-            padding: 10px;
-            overflow-y: auto;
             margin-top: 80px;
+            overflow-y: auto;
+            height: calc(100vh - 80px);
+            padding: 10px;
+            box-sizing: border-box;
         }
 
         .file-item {
@@ -84,6 +83,8 @@
         .file-link {
             color: #0366d6;
             text-decoration: none;
+            display: block;
+            margin-bottom: 5px;
         }
 
         .file-link:hover {
@@ -98,27 +99,53 @@
             background-color: #d3d3d3;
         }
 
+        .folder-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
         .highlight-match {
             background-color: yellow;
             font-weight: bold;
         }
 
-        @media (min-width: 600px) {
+        /* Estilos responsive */
+        @media (max-width: 768px) {
             #search-container {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 20px;
+                padding: 5px;
             }
 
             #search-box {
-                margin-bottom: 0;
-                margin-right: 10px;
-                flex: 1;
+                margin-right: 5px;
+                font-size: 0.9em;
             }
 
-            #search-buttons {
-                flex: none;
+            #search-container button {
+                font-size: 0.9em;
+                padding: 5px 8px;
+            }
+
+            #controls button {
+                font-size: 0.9em;
+                padding: 5px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #search-container {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px;
+            }
+
+            #search-box {
+                margin: 0 0 10px 0;
+            }
+
+            #search-container button {
+                width: 100%;
+                margin: 5px 0;
             }
         }
     </style>
@@ -126,10 +153,8 @@
 <body>
     <div id="search-container">
         <input type="text" id="search-box" placeholder="Buscar...">
-        <div id="search-buttons">
-            <button id="prev-btn">Anterior</button>
-            <button id="next-btn">Siguiente</button>
-        </div>
+        <button id="prev-btn">Anterior</button>
+        <button id="next-btn">Siguiente</button>
         <span id="search-info"></span>
     </div>
 
@@ -278,84 +303,88 @@
 
             // Mostrar ruta del archivo con enlace
             const link = document.createElement('a');
-            link.href = `https://github.com/${user}/${repo}/blob/${branch}/${filePath}`;
+            link.href = '#';
+            link.target = '_blank'; // Abre en una nueva pestaña
             link.textContent = filePath;
-            link.target = '_blank';
             link.classList.add('file-link');
+            link.onclick = () => {
+                localStorage.setItem('fileContent', fileContent);
+                localStorage.setItem('fileName', filePath);
+                window.open('transponer.html', '_blank'); // Abre en una nueva pestaña
+            };
             div.appendChild(link);
 
+            // Mostrar contenido del archivo
             const pre = document.createElement('pre');
-            pre.textContent = fileContent;
             pre.classList.add('file-content');
+            pre.innerHTML = fileContent;
             div.appendChild(pre);
 
             fileListDiv.appendChild(div);
         }
 
-        // Búsqueda de texto en archivos cargados
-        let searchResults = [];
-        let currentResultIndex = -1;
+        function highlightMatches(text, isRoute) {
+            const searchTerm = document.getElementById('search-box').value.trim();
+            if (!searchTerm) return text;
 
-        document.getElementById('search-box').oninput = () => {
-            const query = document.getElementById('search-box').value.toLowerCase().trim();
-            if (query.length > 0) {
-                searchResults = [];
-                currentResultIndex = -1;
-                for (const [filePath, content] of Object.entries(fileContents)) {
-                    const matches = content.toLowerCase().matchAll(new RegExp(query, 'gi'));
-                    for (const match of matches) {
-                        searchResults.push({ filePath, index: match.index, length: match[0].length });
-                    }
-                }
-                if (searchResults.length > 0) {
-                    navigateToResult(0);
-                }
-            } else {
-                clearHighlights();
-                searchResults = [];
-                currentResultIndex = -1;
-            }
-        };
-
-        document.getElementById('prev-btn').onclick = () => {
-            if (searchResults.length > 0) {
-                navigateToResult((currentResultIndex - 1 + searchResults.length) % searchResults.length);
-            }
-        };
-
-        document.getElementById('next-btn').onclick = () => {
-            if (searchResults.length > 0) {
-                navigateToResult((currentResultIndex + 1) % searchResults.length);
-            }
-        };
-
-        function navigateToResult(index) {
-            currentResultIndex = index;
-            const result = searchResults[currentResultIndex];
-            clearHighlights();
-
-            const fileItem = Array.from(document.querySelectorAll('.file-item')).find(div => div.querySelector('.file-link').textContent === result.filePath);
-            if (fileItem) {
-                const pre = fileItem.querySelector('.file-content');
-                const highlightedText = highlightMatch(pre.textContent, result.index, result.length);
-                pre.innerHTML = highlightedText;
-
-                // Desplazar al archivo y resaltado
-                fileItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            document.getElementById('search-info').textContent = `Resultado ${currentResultIndex + 1} de ${searchResults.length}`;
+            const regex = new RegExp(searchTerm, 'gi');
+            return text.replace(regex, match => `<span class="${isRoute ? 'highlight-route' : 'highlight'}">${match}</span>`);
         }
 
-        function highlightMatch(text, index, length) {
-            return `${text.substring(0, index)}<span class="highlight-match">${text.substring(index, index + length)}</span>${text.substring(index + length)}`;
-        }
+        document.getElementById('search-box').addEventListener('input', () => {
+            const searchTerm = document.getElementById('search-box').value.trim().toLowerCase();
+            if (!searchTerm) return;
 
-        function clearHighlights() {
-            document.querySelectorAll('.file-content').forEach(pre => {
-                pre.innerHTML = pre.textContent; // Revertir a texto plano
+            const fileItems = document.querySelectorAll('.file-item');
+            let firstMatchFound = false;
+
+            fileItems.forEach((item, index) => {
+                const link = item.querySelector('.file-link');
+                const pre = item.querySelector('.file-content');
+
+                const fileName = link.textContent.toLowerCase();
+                const fileContent = fileContents[link.textContent].toLowerCase();
+
+                const isMatch = fileName.includes(searchTerm) || fileContent.includes(searchTerm);
+
+                if (isMatch && !firstMatchFound) {
+                    firstMatchFound = true;
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                link.innerHTML = highlightMatches(link.textContent, true);
+                pre.innerHTML = highlightMatches(fileContents[link.textContent], false);
             });
-            document.getElementById('search-info').textContent = '';
+        });
+
+        let currentMatchIndex = 0;
+
+        document.getElementById('prev-btn').onclick = () => navigateMatches(-1);
+        document.getElementById('next-btn').onclick = () => navigateMatches(1);
+
+        function navigateMatches(direction) {
+            const searchTerm = document.getElementById('search-box').value.trim().toLowerCase();
+            if (!searchTerm) return;
+
+            const fileItems = Array.from(document.querySelectorAll('.file-item'));
+            const matches = fileItems.filter(item => {
+                const fileName = item.querySelector('.file-link').textContent.toLowerCase();
+                const fileContent = fileContents[item.querySelector('.file-link').textContent].toLowerCase();
+                return fileName.includes(searchTerm) || fileContent.includes(searchTerm);
+            });
+
+            if (matches.length === 0) return;
+
+            currentMatchIndex = (currentMatchIndex + direction + matches.length) % matches.length;
+            matches[currentMatchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            matches[currentMatchIndex].classList.add('highlight-match');
+
+            // Limpiar otros matches
+            matches.forEach((item, index) => {
+                if (index !== currentMatchIndex) item.classList.remove('highlight-match');
+            });
+
+            document.getElementById('search-info').textContent = `Coincidencia ${currentMatchIndex + 1} de ${matches.length}`;
         }
     </script>
 </body>
