@@ -11,40 +11,34 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* Panel de búsqueda */
         #search-container {
+            display: none; /* Oculto al principio */
             position: sticky;
-            top: 60px; /* Ajusta esto según el espacio necesario */
+            top: 0;
+            left: 0;
+            width: 100%;
             background-color: #f8f9fa;
             padding: 10px;
             border-bottom: 1px solid #dee2e6;
-            z-index: 1000;
-            display: none; /* Oculto al principio */
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* Permite que el contenido se ajuste en pantallas más pequeñas */
+            box-sizing: border-box;
         }
 
-        #search-container input {
+        #search-box {
             flex: 1;
             margin-right: 10px;
             padding: 5px;
-            max-width: calc(100% - 150px); /* Ajusta el ancho máximo en función del tamaño del botón */
-        }
-
-        #search-container button {
-            margin: 5px;
-            padding: 5px 10px;
             font-size: 1em;
-            cursor: pointer;
         }
 
         #controls {
-            margin-top: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -53,10 +47,18 @@
         }
 
         #file-list {
-            margin-top: 80px;
+            margin-top: 20px;
             overflow-y: auto;
-            height: calc(100vh - 80px);
+            height: calc(100vh - 90px); /* Ajusta para que se acomode con el contenedor de búsqueda */
             padding: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin: 0 5px;
+            padding: 5px;
+            font-size: 1em;
+            cursor: pointer;
         }
 
         .file-item {
@@ -99,6 +101,27 @@
         .highlight-match {
             background-color: yellow;
             font-weight: bold;
+        }
+
+        /* Responsive design adjustments */
+        @media (max-width: 768px) {
+            #search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #search-box {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            #controls {
+                flex-direction: column;
+            }
+
+            #controls button {
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
