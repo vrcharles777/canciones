@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mostrar Archivos .txt desde GitHub</title>
     <style>
         body {
@@ -11,91 +11,94 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-        }
-
-        .top-buttons, #controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
             box-sizing: border-box;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .top-buttons button, #controls button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
-        }
-
-        .top-buttons button.grey, #controls button {
-            background-color: grey;
-            color: white;
-        }
-
-        .top-buttons button.red {
-            background-color: red;
-            color: white;
-        }
-
-        .top-buttons button.blue {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .top-buttons button:hover, #controls button:hover {
-            opacity: 0.8;
         }
 
         #search-container {
             position: sticky;
-            top: 60px; /* Ajusta esto para que quede justo debajo de los botones */
+            top: 0;
+            width: 100%;
             background-color: #f8f9fa;
-            padding: 10px;
             border-bottom: 1px solid #dee2e6;
-            z-index: 999; /* Asegura que esté por encima del contenido */
-            display: none; /* Oculto al principio */
-            box-sizing: border-box;
-            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            z-index: 1000;
+            display: none; /* Oculta inicialmente */
+        }
+
+        #search-controls {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
         }
 
         #search-box {
             flex: 1;
+            margin-right: 10px;
             padding: 5px;
-            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
         }
 
         #prev-btn, #next-btn {
+            margin-left: 5px;
             padding: 5px 10px;
             font-size: 1em;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
             cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+        #prev-btn:hover, #next-btn:hover {
+            background-color: #0056b3;
         }
 
         #search-info {
+            margin-top: 10px;
             font-size: 0.9em;
-            margin-left: 10px;
         }
 
-        #folder-list, #file-list {
-            margin: 10px;
+        #controls {
+            margin-top: 10px;
             padding: 10px;
-            box-sizing: border-box;
-            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #file-list {
+            flex: 1;
             overflow-y: auto;
-            height: calc(100vh - 140px); /* Ajusta altura teniendo en cuenta el header y el panel de búsqueda */
+            padding: 10px;
+        }
+
+        button {
+            margin: 0 5px;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #0056b3;
         }
 
         .file-item {
             margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            padding: 10px;
         }
 
         .file-content {
@@ -109,7 +112,7 @@
         }
 
         .file-link {
-            color: #0366d6;
+            color: #007bff;
             text-decoration: none;
         }
 
@@ -129,40 +132,20 @@
             background-color: yellow;
             font-weight: bold;
         }
-
-        .folder-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 768px) {
-            #search-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            #search-box {
-                margin-bottom: 10px;
-            }
-
-            #prev-btn, #next-btn {
-                width: 100%;
-                margin-bottom: 5px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div id="controls">
-        <button id="load-txt-button">Cargar Archivos .txt</button>
+    <div id="search-container">
+        <div id="search-controls">
+            <input type="text" id="search-box" placeholder="Buscar...">
+            <button id="prev-btn">Anterior</button>
+            <button id="next-btn">Siguiente</button>
+        </div>
+        <span id="search-info"></span>
     </div>
 
-    <div id="search-container">
-        <input type="text" id="search-box" placeholder="Buscar...">
-        <button id="prev-btn">Anterior</button>
-        <button id="next-btn">Siguiente</button>
-        <span id="search-info"></span>
+    <div id="controls">
+        <button id="load-txt-button">Cargar Archivos .txt</button>
     </div>
 
     <div id="folder-list"></div>
@@ -173,15 +156,11 @@
         const repo = 'canciones';
         const branch = 'main';
 
-        // Solo mostramos una parte del token
         const partialToken = 'github_pat_';
-
-        // Completamos el token cuando sea necesario
         const completeToken = `${partialToken}11AFM4DFA0YDNkKI3tQrR4_1MMt1vun7a8TJPdIO9u3VwxkKx8ftjrUFB9GzPs8NV0K2U3YMA502kqjRpk`;
 
-        let fileContents = {}; // Almacena el contenido de los archivos para búsqueda
+        let fileContents = {};
 
-        // Cargar carpetas en la raíz del repositorio
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const rootContents = await fetchRepoContents('');
@@ -192,7 +171,6 @@
             }
         });
 
-        // Función para mostrar carpetas con checkboxes
         function displayFolders(contents) {
             const folderListDiv = document.getElementById('folder-list');
             contents.forEach(item => {
@@ -214,7 +192,6 @@
             });
         }
 
-        // Función para obtener el contenido de un repositorio
         async function fetchRepoContents(path = '') {
             const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
             try {
@@ -233,7 +210,6 @@
             }
         }
 
-        // Función para obtener el contenido de un archivo
         async function fetchFileContent(filePath) {
             const url = `https://api.github.com/repos/${user}/${repo}/contents/${filePath}?ref=${branch}`;
             try {
@@ -260,13 +236,12 @@
                 return;
             }
 
-            // Eliminar carpetas y botón de carga
             document.getElementById('folder-list').remove();
             document.getElementById('controls').remove();
-            document.getElementById('search-container').style.display = 'flex';
+            document.getElementById('search-container').style.display = 'flex'; // Mostrar barra de búsqueda
 
             const fileListDiv = document.getElementById('file-list');
-            fileListDiv.innerHTML = ''; // Limpiar resultados anteriores
+            fileListDiv.innerHTML = '';
 
             try {
                 for (const folder of selectedFolders) {
@@ -289,7 +264,7 @@
                 } else if (file.name.endsWith('.txt')) {
                     try {
                         const fileContent = await fetchFileContent(filePath);
-                        fileContents[filePath] = fileContent; // Almacenar contenido para búsqueda
+                        fileContents[filePath] = fileContent;
                         displayFileContent(filePath, fileContent);
                     } catch (error) {
                         console.error(`Error al obtener el contenido del archivo ${filePath}:`, error);
@@ -304,20 +279,17 @@
             const div = document.createElement('div');
             div.classList.add('file-item');
 
-            // Mostrar ruta del archivo con enlace
             const link = document.createElement('a');
-            link.href = '#';
-            link.target = '_blank'; // Abre en una nueva pestaña
-            link.textContent = filePath;
             link.classList.add('file-link');
+            link.href = '#';
+            link.textContent = filePath;
             link.onclick = () => {
+                localStorage.setItem('filePath', filePath);
                 localStorage.setItem('fileContent', fileContent);
-                localStorage.setItem('fileName', filePath);
-                window.open('transponer.html', '_blank'); // Abre en una nueva pestaña
+                window.open('transponer.html', '_blank');
             };
             div.appendChild(link);
 
-            // Mostrar contenido del archivo
             const pre = document.createElement('pre');
             pre.classList.add('file-content');
             pre.innerHTML = fileContent;
@@ -336,7 +308,10 @@
 
         document.getElementById('search-box').addEventListener('input', () => {
             const searchTerm = document.getElementById('search-box').value.trim().toLowerCase();
-            if (!searchTerm) return;
+            if (!searchTerm) {
+                document.getElementById('search-info').textContent = '';
+                return;
+            }
 
             const fileItems = document.querySelectorAll('.file-item');
             let firstMatchFound = false;
@@ -358,6 +333,8 @@
                 link.innerHTML = highlightMatches(link.textContent, true);
                 pre.innerHTML = highlightMatches(fileContents[link.textContent], false);
             });
+
+            updateSearchInfo(searchTerm);
         });
 
         let currentMatchIndex = 0;
@@ -382,12 +359,21 @@
             matches[currentMatchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
             matches[currentMatchIndex].classList.add('highlight-match');
 
-            // Limpiar otros matches
             matches.forEach((item, index) => {
                 if (index !== currentMatchIndex) item.classList.remove('highlight-match');
             });
 
             document.getElementById('search-info').textContent = `Coincidencia ${currentMatchIndex + 1} de ${matches.length}`;
+        }
+
+        function updateSearchInfo(searchTerm) {
+            const fileItems = Array.from(document.querySelectorAll('.file-item'));
+            const matches = fileItems.filter(item => {
+                const fileName = item.querySelector('.file-link').textContent.toLowerCase();
+                const fileContent = fileContents[item.querySelector('.file-link').textContent].toLowerCase();
+                return fileName.includes(searchTerm) || fileContent.includes(searchTerm);
+            });
+            document.getElementById('search-info').textContent = `${matches.length} coincidencias encontradas`;
         }
     </script>
 </body>
