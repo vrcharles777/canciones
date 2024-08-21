@@ -11,6 +11,7 @@
             flex-direction: column;
             height: 100vh;
             margin: 0;
+            box-sizing: border-box;
         }
 
         #search-container {
@@ -18,10 +19,10 @@
             top: 0;
             left: 0;
             width: 100%;
-            background-color: #f0f0f0;
+            background-color: #f8f9fa;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             z-index: 100;
-            display: flex;
+            display: none;
             padding: 10px;
             box-sizing: border-box;
             justify-content: space-between;
@@ -31,15 +32,9 @@
         #search-box {
             flex: 1;
             margin-right: 10px;
-            padding: 0.5em;
+            padding: 5px 10px;
             font-size: 1em;
-            width: 100%;
             box-sizing: border-box;
-        }
-
-        #search-buttons {
-            display: flex;
-            gap: 5px;
         }
 
         #controls {
@@ -56,16 +51,19 @@
             overflow-y: auto;
             height: calc(100vh - 80px);
             padding: 10px;
+            box-sizing: border-box;
         }
 
         button {
-            padding: 0.5em 1em;
+            margin: 0 5px;
+            padding: 5px 10px;
             font-size: 1em;
             cursor: pointer;
-            border: none;
             background-color: #007bff;
             color: white;
+            border: none;
             border-radius: 4px;
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
@@ -108,19 +106,25 @@
             font-weight: bold;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            #search-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
             #search-box {
-                font-size: 0.9em;
-                padding: 0.4em;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            #controls {
+                flex-direction: column;
+                margin-top: 20px;
             }
 
             button {
-                padding: 0.4em 0.8em;
-                font-size: 0.9em;
-            }
-
-            #search-buttons {
-                flex-direction: column;
+                width: 100%;
+                margin: 5px 0;
             }
         }
     </style>
@@ -128,10 +132,8 @@
 <body>
     <div id="search-container">
         <input type="text" id="search-box" placeholder="Buscar...">
-        <div id="search-buttons">
-            <button id="prev-btn">Anterior</button>
-            <button id="next-btn">Siguiente</button>
-        </div>
+        <button id="prev-btn">Anterior</button>
+        <button id="next-btn">Siguiente</button>
         <span id="search-info"></span>
     </div>
 
@@ -266,112 +268,102 @@
                         fileContents[filePath] = fileContent; // Almacenar contenido para búsqueda
                         displayFileContent(filePath, fileContent);
                     } catch (error) {
-                        console.error(`Error al mostrar el contenido del archivo ${file.name}:`, error);
+                        console.error(`Error al obtener el contenido del archivo ${filePath}:`, error);
+                        displayFileContent(filePath, 'No se pudo obtener el contenido del archivo.');
                     }
                 }
             }
         }
 
-        function displayFileContent(filePath, content) {
+        function displayFileContent(filePath, fileContent) {
             const fileListDiv = document.getElementById('file-list');
+            const div = document.createElement('div');
+            div.classList.add('file-item');
 
-            const fileItemDiv = document.createElement('div');
-            fileItemDiv.classList.add('file-item');
+            // Mostrar ruta del archivo con enlace
+            const link = document.createElement('a');
+            link.href = '#';
+            link.target = '_blank'; // Abre en una nueva pestaña
+            link.textContent = filePath;
+            link.classList.add('file-link');
+            link.onclick = () => {
+                localStorage.setItem('fileContent', fileContent);
+                localStorage.setItem('fileName', filePath);
+                window.open('transponer.html', '_blank'); // Abre en una nueva pestaña
+            };
+            div.appendChild(link);
 
-            const fileNameLink = document.createElement('a');
-            fileNameLink.href = `#${filePath}`;
-            fileNameLink.classList.add('file-link');
-            fileNameLink.textContent = filePath;
-            fileItemDiv.appendChild(fileNameLink);
+            // Mostrar contenido del archivo
+            const pre = document.createElement('pre');
+            pre.classList.add('file-content');
+            pre.innerHTML = fileContent;
+            div.appendChild(pre);
 
-            const fileContentDiv = document.createElement('div');
-            fileContentDiv.classList.add('file-content');
-            fileContentDiv.textContent = content;
-            fileItemDiv.appendChild(fileContentDiv);
-
-            fileListDiv.appendChild(fileItemDiv);
+            fileListDiv.appendChild(div);
         }
 
-        document.getElementById('search-box').addEventListener('input', handleSearch);
+        function highlightMatches(text, isRoute) {
+            const searchTerm = document.getElementById('search-box').value.trim();
+            if (!searchTerm) return text;
 
-        let currentMatchIndex = -1;
-        let matchCount = 0;
-        let currentMatches = [];
+            const regex = new RegExp(searchTerm, 'gi');
+            return text.replace(regex, match => `<span class="${isRoute ? 'highlight-route' : 'highlight'}">${match}</span>`);
+        }
 
-        function handleSearch() {
+        document.getElementById('search-box').addEventListener('input', () => {
             const searchTerm = document.getElementById('search-box').value.trim().toLowerCase();
-            currentMatches = [];
+            if (!searchTerm) return;
 
-            for (const [filePath, content] of Object.entries(fileContents)) {
-                const fileItemDiv = document.querySelector(`.file-item:has(.file-link[href="#${filePath}"])`);
-                const fileContentDiv = fileItemDiv.querySelector('.file-content');
+            const fileItems = document.querySelectorAll('.file-item');
+            let firstMatchFound = false;
 
-                const regex = new RegExp(searchTerm, 'gi');
-                const matches = [...content.matchAll(regex)];
+            fileItems.forEach((item, index) => {
+                const link = item.querySelector('.file-link');
+                const pre = item.querySelector('.file-content');
 
-                if (matches.length > 0) {
-                    fileItemDiv.style.display = '';
-                    highlightMatches(fileContentDiv, matches, searchTerm);
-                    currentMatches.push(...matches.map(match => ({ match, fileContentDiv })));
-                } else {
-                    fileItemDiv.style.display = 'none';
+                const fileName = link.textContent.toLowerCase();
+                const fileContent = fileContents[link.textContent].toLowerCase();
+
+                const isMatch = fileName.includes(searchTerm) || fileContent.includes(searchTerm);
+
+                if (isMatch && !firstMatchFound) {
+                    firstMatchFound = true;
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-            }
 
-            matchCount = currentMatches.length;
-            if (matchCount > 0) {
-                currentMatchIndex = 0;
-                scrollToMatch(currentMatchIndex);
-            } else {
-                currentMatchIndex = -1;
-            }
-
-            updateSearchInfo();
-        }
-
-        function highlightMatches(fileContentDiv, matches, searchTerm) {
-            const originalContent = fileContents[fileContentDiv.parentElement.querySelector('.file-link').getAttribute('href').slice(1)];
-            let highlightedContent = originalContent;
-
-            for (let i = matches.length - 1; i >= 0; i--) {
-                const match = matches[i];
-                highlightedContent = highlightedContent.substring(0, match.index) + 
-                    '<span class="highlight-match">' + 
-                    highlightedContent.substring(match.index, match.index + searchTerm.length) + 
-                    '</span>' + 
-                    highlightedContent.substring(match.index + searchTerm.length);
-            }
-
-            fileContentDiv.innerHTML = highlightedContent;
-        }
-
-        document.getElementById('prev-btn').addEventListener('click', () => {
-            if (matchCount > 0) {
-                currentMatchIndex = (currentMatchIndex - 1 + matchCount) % matchCount;
-                scrollToMatch(currentMatchIndex);
-            }
+                link.innerHTML = highlightMatches(link.textContent, true);
+                pre.innerHTML = highlightMatches(fileContents[link.textContent], false);
+            });
         });
 
-        document.getElementById('next-btn').addEventListener('click', () => {
-            if (matchCount > 0) {
-                currentMatchIndex = (currentMatchIndex + 1) % matchCount;
-                scrollToMatch(currentMatchIndex);
-            }
-        });
+        let currentMatchIndex = 0;
 
-        function scrollToMatch(index) {
-            const match = currentMatches[index];
-            match.fileContentDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            match.fileContentDiv.querySelector('.highlight-match').style.backgroundColor = 'yellow';
-        }
+        document.getElementById('prev-btn').onclick = () => navigateMatches(-1);
+        document.getElementById('next-btn').onclick = () => navigateMatches(1);
 
-        function updateSearchInfo() {
-            const searchInfo = document.getElementById('search-info');
-            if (matchCount > 0) {
-                searchInfo.textContent = `Coincidencia ${currentMatchIndex + 1} de ${matchCount}`;
-            } else {
-                searchInfo.textContent = 'No se encontraron coincidencias';
-            }
+        function navigateMatches(direction) {
+            const searchTerm = document.getElementById('search-box').value.trim().toLowerCase();
+            if (!searchTerm) return;
+
+            const fileItems = Array.from(document.querySelectorAll('.file-item'));
+            const matches = fileItems.filter(item => {
+                const fileName = item.querySelector('.file-link').textContent.toLowerCase();
+                const fileContent = fileContents[item.querySelector('.file-link').textContent].toLowerCase();
+                return fileName.includes(searchTerm) || fileContent.includes(searchTerm);
+            });
+
+            if (matches.length === 0) return;
+
+            currentMatchIndex = (currentMatchIndex + direction + matches.length) % matches.length;
+            matches[currentMatchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            matches[currentMatchIndex].classList.add('highlight-match');
+
+            // Limpiar otros matches
+            matches.forEach((item, index) => {
+                if (index !== currentMatchIndex) item.classList.remove('highlight-match');
+            });
+
+            document.getElementById('search-info').textContent = `Coincidencia ${currentMatchIndex + 1} de ${matches.length}`;
         }
     </script>
 </body>
