@@ -11,54 +11,87 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden;
         }
 
-        #search-container {
-            display: none; /* Oculto al principio */
-            position: sticky;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-bottom: 1px solid #dee2e6;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-        }
-
-        #search-box {
-            flex: 1;
-            margin-right: 10px;
-            padding: 5px;
-            font-size: 1em;
-        }
-
-        #controls {
+        .top-buttons, #controls {
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px;
             box-sizing: border-box;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
         }
 
-        #file-list {
-            margin-top: 20px;
-            overflow-y: auto;
-            height: calc(100vh - 90px); /* Ajusta para que se acomode con el contenedor de búsqueda */
+        .top-buttons button, #controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .top-buttons button.grey, #controls button {
+            background-color: grey;
+            color: white;
+        }
+
+        .top-buttons button.red {
+            background-color: red;
+            color: white;
+        }
+
+        .top-buttons button.blue {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .top-buttons button:hover, #controls button:hover {
+            opacity: 0.8;
+        }
+
+        #search-container {
+            position: sticky;
+            top: 60px; /* Ajusta esto para que quede justo debajo de los botones */
+            background-color: #f8f9fa;
             padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            z-index: 999; /* Asegura que esté por encima del contenido */
+            display: none; /* Oculto al principio */
+            box-sizing: border-box;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #search-box {
+            flex: 1;
+            padding: 5px;
             box-sizing: border-box;
         }
 
-        button {
-            margin: 0 5px;
-            padding: 5px;
+        #prev-btn, #next-btn {
+            padding: 5px 10px;
             font-size: 1em;
             cursor: pointer;
+        }
+
+        #search-info {
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        #folder-list, #file-list {
+            margin: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            flex-grow: 1;
+        }
+
+        #file-list {
+            overflow-y: auto;
+            height: calc(100vh - 140px); /* Ajusta altura teniendo en cuenta el header y el panel de búsqueda */
         }
 
         .file-item {
@@ -92,18 +125,17 @@
             background-color: #d3d3d3;
         }
 
+        .highlight-match {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
         .folder-item {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
         }
 
-        .highlight-match {
-            background-color: yellow;
-            font-weight: bold;
-        }
-
-        /* Responsive design adjustments */
         @media (max-width: 768px) {
             #search-container {
                 flex-direction: column;
@@ -111,30 +143,26 @@
             }
 
             #search-box {
-                margin-right: 0;
                 margin-bottom: 10px;
             }
 
-            #controls {
-                flex-direction: column;
-            }
-
-            #controls button {
-                margin-bottom: 10px;
+            #prev-btn, #next-btn {
+                width: 100%;
+                margin-bottom: 5px;
             }
         }
     </style>
 </head>
 <body>
+    <div id="controls">
+        <button id="load-txt-button">Cargar Archivos .txt</button>
+    </div>
+
     <div id="search-container">
         <input type="text" id="search-box" placeholder="Buscar...">
         <button id="prev-btn">Anterior</button>
         <button id="next-btn">Siguiente</button>
         <span id="search-info"></span>
-    </div>
-
-    <div id="controls">
-        <button id="load-txt-button">Cargar Archivos .txt</button>
     </div>
 
     <div id="folder-list"></div>
