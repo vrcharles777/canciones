@@ -23,11 +23,12 @@
             background-color: #f0f0f0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             z-index: 100;
-            display: none; /* Oculto al principio */
+            display: flex; /* Cambiado a flex */
             padding: 10px;
             box-sizing: border-box;
-            justify-content: space-between;
+            justify-content: space-between; /* Espacia elementos */
             align-items: center;
+            flex-wrap: wrap; /* Permite ajuste en dispositivos pequeños */
         }
 
         #search-box {
@@ -35,6 +36,7 @@
             margin-right: 10px;
             padding: 5px;
             font-size: 1em;
+            min-width: 0; /* Evita que se estire demasiado */
         }
 
         #controls {
@@ -120,6 +122,7 @@
             button {
                 font-size: 0.9em;
                 padding: 8px;
+                margin: 5px 0; /* Ajusta margen para botones en móviles */
             }
 
             .file-content {
@@ -131,13 +134,14 @@
             }
 
             #search-container {
-                flex-direction: column;
-                align-items: flex-start;
+                flex-direction: row;
+                flex-wrap: nowrap;
             }
 
             #search-box {
-                margin: 0 0 10px 0;
-                width: 100%;
+                margin: 0;
+                margin-right: 10px;
+                width: calc(100% - 120px); /* Ajusta el tamaño para que quepa con los botones */
             }
 
             #file-list {
