@@ -1,10 +1,10 @@
-Dm-(C-F)-A#
+(Dm)-C!-F!-A#
 me postro ante ti mi
-(F)-Gm7!F!-A#-(Gm-C)-Dm
-(A#-F-Gm-F)-A#-C //$
+F-A#-(Gm-C-Dm-F)
+(A#-F)-Gm-A#-C //$
 
 Exaltate señor
-F-A#-(Gm-C-A#-C)
+F-A#-(Gm-C)-A#C!
 F-A#-(Gm-C)-F
 
 instrumental
