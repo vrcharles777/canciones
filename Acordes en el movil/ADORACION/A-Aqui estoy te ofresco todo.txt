@@ -1,6 +1,4 @@
-a|quí estoy, te ofrezco todo (porque tú)
-
+a|quÃ­ estoy, te ofrezco todo (porque tÃº)
 A-E-F#m-(C#m-E)-E //
-D-E-(F#m-A-D-E)
-
+D-E-F#m6-E
 (A-D)-E /// D-E
