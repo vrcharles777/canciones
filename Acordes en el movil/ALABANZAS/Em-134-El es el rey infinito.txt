@@ -5,5 +5,4 @@ el es el rey infinito
 Em-C///-G-D $
 
 Em-C-G-D//
-C-D-Em-C
-Am-D-Em
+C-D-Em-C-Am-D
