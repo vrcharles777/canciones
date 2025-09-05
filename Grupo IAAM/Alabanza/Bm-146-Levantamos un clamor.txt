@@ -6,7 +6,7 @@ que el cielo se parta en dos
 
 hossana al rey de salvacion
 2Bm-2D-2Em-G-A//
-1,5Bm!_-(F#m!!!-Bm!-F#m!-Bm!)-1G!_
+1,5Bm!_-(F#m!!!-G!-Bm!-F#m!)-1G!_
 
 puente
 2G-2A-G-A-(Bm!-C#m!-D!-F#m!)
@@ -17,3 +17,4 @@ hossana, hossana, hossana al rey
 melodia
 {B-G-F#}{A-F#-E}
 {A-E-D}{B-C#-D-E}
+
